@@ -1,0 +1,3809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SisuProbe — Elisa Context Layer &amp; NOC Autopilot</title>
+  <meta name="description" content="Adversarial Knowledge Extraction and Autonomous Night Operations for Elisa's Digital Master Context (as-experienced) Layer by Team NoNomads." />
+  <meta property="og:title" content="SisuProbe — Elisa Context Layer &amp; NOC Autopilot" />
+  <meta property="og:description" content="Adversarial Knowledge Extraction and Autonomous Night Operations for Elisa's Digital Master Context (as-experienced) Layer by Team NoNomads." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* Global & Presentation Bar */
+      --bar-bg: #020617;
+      --bar-border: #1e293b;
+      --cyan: #38c6f4;
+      --cyan-dim: rgba(56, 198, 244, 0.16);
+      --cyan-glow: rgba(56, 198, 244, 0.45);
+      --green: #3ddc97;
+      --green-dim: rgba(61, 220, 151, 0.14);
+      --crimson: #ff5468;
+      --crimson-dim: rgba(255, 84, 104, 0.15);
+      --amber: #f59e0b;
+      --amber-dim: rgba(245, 158, 11, 0.15);
+
+      /* View 1: Microsoft Teams Dark Theme */
+      --teams-bg: #1f1f1f;
+      --teams-sidebar: #141414;
+      --teams-rail: #0f0f0f;
+      --teams-card: #292929;
+      --teams-card-hover: #333333;
+      --teams-border: #303030;
+      --teams-purple: #5b5fc7;
+      --teams-purple-hover: #6e72d3;
+      --teams-purple-bubble: #313352;
+      --teams-text: #f5f5f5;
+      --teams-muted: #adadad;
+      --teams-online: #6bb700;
+      --teams-away: #ffaa44;
+
+      /* View 2: Elisa NOC Autopilot */
+      --elisa-bg: #030a26;
+      --elisa-card: #0a1645;
+      --elisa-card-alt: #071033;
+      --elisa-border: #1b2c6e;
+      --elisa-text: #f8fafc;
+      --elisa-muted: #94a3b8;
+
+      /* Typography */
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bar-bg);
+      color: #f8fafc;
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    button, input, textarea {
+      font-family: inherit;
+    }
+
+    /* ==========================================================================
+       TOP GLOBAL PRESENTATION BAR (48px fixed)
+       ========================================================================== */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: var(--bar-bg);
+      border-bottom: 1px solid var(--bar-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 200;
+      user-select: none;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 240px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .brand-logo-mark {
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
+      background: linear-gradient(135deg, var(--cyan), #0284c7);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #020617;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 12px;
+      box-shadow: 0 0 12px rgba(56, 198, 244, 0.35);
+    }
+
+    .brand-logo span.accent {
+      color: var(--cyan);
+    }
+
+    .brand-meta {
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      letter-spacing: 0.01em;
+      padding-left: 8px;
+      border-left: 1px solid #1e293b;
+      white-space: nowrap;
+    }
+
+    .view-switcher {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: #091026;
+      padding: 3px;
+      border-radius: 7px;
+      border: 1px solid #1e293b;
+    }
+
+    .view-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .view-btn:hover {
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .view-btn.active-teams {
+      background: var(--teams-purple);
+      color: #ffffff;
+      box-shadow: 0 1px 6px rgba(91, 95, 199, 0.45);
+    }
+
+    .view-btn.active-noc {
+      background: #0a2263;
+      color: var(--cyan);
+      border: 1px solid rgba(56, 198, 244, 0.4);
+      box-shadow: 0 1px 8px rgba(56, 198, 244, 0.25);
+    }
+
+    .kbd-hint {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: rgba(0, 0, 0, 0.35);
+      color: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ctrl-btn {
+      background: #0f172a;
+      border: 1px solid #263554;
+      color: #e2e8f0;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .ctrl-btn:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+      color: #ffffff;
+    }
+
+    .ctrl-btn.probe-btn {
+      background: rgba(245, 158, 11, 0.14);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+    }
+
+    .ctrl-btn.probe-btn:hover {
+      background: rgba(245, 158, 11, 0.24);
+      border-color: #fbbf24;
+      color: #fef3c7;
+    }
+
+    .ctrl-btn.xray-btn {
+      background: rgba(56, 198, 244, 0.12);
+      border-color: rgba(56, 198, 244, 0.45);
+      color: var(--cyan);
+      position: relative;
+    }
+
+    .ctrl-btn.xray-btn:hover,
+    .ctrl-btn.xray-btn.open {
+      background: rgba(56, 198, 244, 0.24);
+      border-color: var(--cyan);
+      color: #ffffff;
+    }
+
+    .ctrl-btn.xray-btn.pulsing {
+      animation: cyanPulse 1.8s infinite;
+    }
+
+    @keyframes cyanPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(56, 198, 244, 0.65);
+      }
+      70% {
+        box-shadow: 0 0 0 9px rgba(56, 198, 244, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(56, 198, 244, 0);
+      }
+    }
+
+    .xray-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(56, 198, 244, 0.2);
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .xray-count.captured {
+      background: var(--green);
+      color: #020617;
+    }
+
+    .lang-switch {
+      display: inline-flex;
+      align-items: center;
+      background: #091026;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .lang-btn.active {
+      background: #1e293b;
+      color: var(--cyan);
+    }
+
+    /* ==========================================================================
+       MAIN VIEWPORT CONTAINER
+       ========================================================================== */
+    .viewport {
+      position: fixed;
+      top: 48px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+    }
+
+    .view-pane {
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+
+    .view-pane.active {
+      display: flex;
+    }
+
+    /* ==========================================================================
+       VIEW 1: 14:15 MICROSOFT TEAMS CLONE
+       ========================================================================== */
+    .teams-layout {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      background: var(--teams-bg);
+      color: var(--teams-text);
+    }
+
+    /* 1. Far-Left App Rail (64px) */
+    .teams-rail {
+      width: 64px;
+      background: var(--teams-rail);
+      border-right: 1px solid var(--teams-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
+      gap: 4px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .rail-item {
+      width: 56px;
+      height: 52px;
+      border-radius: 6px;
+      background: transparent;
+      border: none;
+      color: var(--teams-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.15s ease;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .rail-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+    }
+
+    .rail-item.active {
+      color: #a6a9dc;
+    }
+
+    .rail-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 12px;
+      bottom: 12px;
+      width: 3px;
+      border-radius: 0 3px 3px 0;
+      background: var(--teams-purple);
+    }
+
+    .rail-icon {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+    }
+
+    .rail-badge {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      background: #c50f1f;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 8px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+
+    .rail-badge.visible {
+      display: inline-flex;
+    }
+
+    .rail-spacer {
+      flex: 1;
+    }
+
+    .erkki-profile-rail {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #3b4468;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      border: 2px solid var(--teams-sidebar);
+    }
+
+    .status-dot.online {
+      background: var(--teams-online);
+    }
+
+    .status-dot.away {
+      background: var(--teams-away);
+    }
+
+    /* 2. Chat & Channel List Sidebar (280px) */
+    .teams-sidebar {
+      width: 280px;
+      background: var(--teams-sidebar);
+      border-right: 1px solid var(--teams-border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .sidebar-header {
+      height: 56px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--teams-border);
+    }
+
+    .sidebar-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .teams-clock-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--teams-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sidebar-section-label {
+      padding: 16px 16px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--teams-muted);
+      letter-spacing: 0.02em;
+    }
+
+    .contact-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 0 8px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 9px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      position: relative;
+      border: none;
+      background: transparent;
+      text-align: left;
+      width: 100%;
+      color: inherit;
+    }
+
+    .contact-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .contact-item.active {
+      background: var(--teams-card);
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      flex-shrink: 0;
+      position: relative;
+      color: #ffffff;
+    }
+
+    .avatar.vl {
+      background: #2b579a;
+    }
+
+    .avatar.mp {
+      background: #4f6bed;
+    }
+
+    .avatar.ek {
+      background: #0078d4;
+    }
+
+    .contact-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .contact-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .contact-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f5f5f5;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .contact-time {
+      font-size: 11px;
+      color: var(--teams-muted);
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+
+    .contact-sub {
+      font-size: 12px;
+      color: var(--teams-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .contact-item.unread .contact-name,
+    .contact-item.unread .contact-sub {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .unread-pill {
+      background: #c50f1f;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .contact-item.unread .unread-pill {
+      display: inline-block;
+    }
+
+    .channel-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      color: var(--teams-muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+
+    .channel-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+    }
+
+    .channel-hash {
+      font-family: var(--font-mono);
+      color: #737373;
+      font-weight: 700;
+    }
+
+    .sidebar-context-card {
+      margin: auto 12px 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(56, 198, 244, 0.07);
+      border: 1px dashed rgba(56, 198, 244, 0.35);
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: #cbd5e1;
+    }
+
+    .sidebar-context-title {
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* 3. Main Chat Window (flex: 1) */
+    .teams-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--teams-bg);
+      min-width: 0;
+      position: relative;
+    }
+
+    .chat-header {
+      height: 56px;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--teams-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--teams-bg);
+      flex-shrink: 0;
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .chat-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chat-user-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .chat-site-meta {
+      font-size: 12px;
+      color: var(--teams-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chat-site-meta strong {
+      color: #e2e8f0;
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .chat-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 5px;
+      border: 1px solid var(--teams-border);
+      background: var(--teams-card);
+      color: #d4d4d4;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .icon-action-btn:hover {
+      background: var(--teams-card-hover);
+      color: #ffffff;
+    }
+
+    /* Message Stream */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 28px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .chat-date-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--teams-muted);
+      font-size: 11px;
+      font-weight: 600;
+      margin: 2px 0;
+    }
+
+    .chat-date-divider::before,
+    .chat-date-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--teams-border);
+    }
+
+    .msg-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      max-width: 820px;
+      animation: msgFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes msgFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .msg-row.outgoing {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .msg-bubble-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .msg-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .msg-row.outgoing .msg-meta {
+      justify-content: flex-end;
+    }
+
+    .msg-author {
+      font-weight: 600;
+      color: #e5e5e5;
+    }
+
+    .msg-timestamp {
+      font-size: 11px;
+      color: var(--teams-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .msg-bubble {
+      background: var(--teams-card);
+      border: 1px solid #383838;
+      padding: 11px 15px;
+      border-radius: 4px 10px 10px 10px;
+      font-size: 13.5px;
+      line-height: 1.52;
+      color: #f5f5f5;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    }
+
+    .msg-row.outgoing .msg-bubble {
+      background: var(--teams-purple-bubble);
+      border-color: #464975;
+      border-radius: 10px 4px 10px 10px;
+    }
+
+    .msg-bubble.provocation {
+      border-color: rgba(245, 158, 11, 0.55);
+      background: linear-gradient(180deg, #2d2926 0%, #292929 100%);
+    }
+
+    .msg-highlight-code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #93c5fd;
+    }
+
+    .msg-reaction-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      justify-content: flex-end;
+    }
+
+    .reaction-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #2b2b40;
+      border: 1px solid #5b5fc7;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 11px;
+      color: #ffffff;
+      animation: popScale 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes popScale {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .extracted-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--cyan);
+      background: rgba(56, 198, 244, 0.12);
+      border: 1px solid rgba(56, 198, 244, 0.35);
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* Typing Indicator */
+    .typing-row {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0;
+    }
+
+    .typing-row.visible {
+      display: flex;
+    }
+
+    .typing-bubble {
+      background: var(--teams-card);
+      border: 1px solid #383838;
+      padding: 8px 14px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--teams-muted);
+    }
+
+    .typing-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .typing-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #9ca3af;
+      animation: typingBounce 1.1s infinite ease-in-out;
+    }
+
+    .typing-dots span:nth-child(2) {
+      animation-delay: 0.18s;
+    }
+
+    .typing-dots span:nth-child(3) {
+      animation-delay: 0.36s;
+    }
+
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.45; }
+      40% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* Quick-Reply Chips Bar & Composer */
+    .chat-composer-zone {
+      padding: 10px 28px 18px;
+      background: var(--teams-bg);
+      border-top: 1px solid var(--teams-border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .chips-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--teams-muted);
+    }
+
+    .chips-header-label {
+      font-weight: 600;
+      color: #a6a9dc;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .quick-chips-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .reply-chip {
+      background: #25252d;
+      border: 1px solid #3d3e5a;
+      border-radius: 7px;
+      padding: 8px 11px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      color: #e5e7eb;
+    }
+
+    .reply-chip:hover {
+      background: #2e2f42;
+      border-color: var(--teams-purple);
+      transform: translateY(-1px);
+    }
+
+    .reply-chip.used {
+      border-color: rgba(61, 220, 151, 0.45);
+      background: rgba(61, 220, 151, 0.06);
+    }
+
+    .chip-kicker {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .reply-chip.chip-hunch .chip-kicker {
+      color: var(--amber);
+    }
+
+    .chip-preview {
+      font-size: 11.5px;
+      line-height: 1.38;
+      color: #d4d4d8;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .composer-box {
+      background: var(--teams-card);
+      border: 1px solid #424242;
+      border-bottom: 2px solid var(--teams-purple);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.15s ease;
+    }
+
+    .composer-box:focus-within {
+      border-color: #7b83eb;
+    }
+
+    .composer-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 12px;
+      border-bottom: 1px solid #333333;
+      color: var(--teams-muted);
+      font-size: 12px;
+      user-select: none;
+    }
+
+    .toolbar-item {
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    .toolbar-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+    }
+
+    .composer-input-row {
+      display: flex;
+      align-items: center;
+      padding: 6px 12px;
+      gap: 10px;
+    }
+
+    .composer-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 13.5px;
+      outline: none;
+      padding: 4px 0;
+    }
+
+    .composer-input::placeholder {
+      color: #8a8a8a;
+    }
+
+    .send-btn {
+      background: var(--teams-purple);
+      border: none;
+      color: #ffffff;
+      width: 34px;
+      height: 32px;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover {
+      background: var(--teams-purple-hover);
+    }
+
+    /* ==========================================================================
+       VIEW 2: 03:00 ELISA NOC AUTOPILOT
+       ========================================================================== */
+    .noc-layout {
+      width: 100%;
+      height: 100%;
+      background: var(--elisa-bg);
+      color: var(--elisa-text);
+      display: flex;
+      flex-direction: column;
+      padding: 18px 24px;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    /* Top Scenario Selector Bar (4 Interactive Test Tabs) */
+    .noc-top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .noc-title-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .noc-clock-badge {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--cyan);
+      background: rgba(56, 198, 244, 0.12);
+      border: 1px solid rgba(56, 198, 244, 0.35);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .noc-heading {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .noc-subheading {
+      font-size: 12px;
+      color: var(--elisa-muted);
+    }
+
+    .noc-context-status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: var(--elisa-card);
+      border: 1px solid var(--elisa-border);
+    }
+
+    .scenario-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .scenario-tab {
+      background: var(--elisa-card-alt);
+      border: 1px solid var(--elisa-border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      color: var(--elisa-text);
+    }
+
+    .scenario-tab:hover {
+      background: var(--elisa-card);
+      border-color: rgba(56, 198, 244, 0.5);
+    }
+
+    .scenario-tab.active {
+      background: var(--elisa-card);
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 1px var(--cyan), 0 6px 20px rgba(3, 10, 38, 0.6);
+    }
+
+    .tab-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--cyan);
+    }
+
+    .tab-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(56, 198, 244, 0.14);
+      color: #bae6fd;
+    }
+
+    .tab-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tab-desc {
+      font-size: 11.5px;
+      color: var(--elisa-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Main NOC Split Grid */
+    .noc-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    .noc-card {
+      background: var(--elisa-card);
+      border: 1px solid var(--elisa-border);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--elisa-border);
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .card-kicker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cyan);
+    }
+
+    /* Node Identity Banner */
+    .node-identity-box {
+      background: var(--elisa-card-alt);
+      border: 1px solid var(--elisa-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 16px;
+    }
+
+    .identity-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .identity-label {
+      font-size: 11px;
+      color: var(--elisa-muted);
+    }
+
+    .identity-val {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* 4 Real-Time Telemetry Boxes */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .telemetry-box {
+      background: var(--elisa-card-alt);
+      border: 1px solid var(--elisa-border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      transition: all 0.25s ease;
+    }
+
+    .telemetry-box.alert-state {
+      border-color: var(--crimson);
+      background: var(--crimson-dim);
+    }
+
+    .telemetry-box.ok-state {
+      border-color: var(--green);
+      background: var(--green-dim);
+    }
+
+    .telemetry-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--elisa-muted);
+    }
+
+    .telemetry-value {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .telemetry-value.green {
+      color: var(--green);
+    }
+
+    .telemetry-value.crimson {
+      color: var(--crimson);
+    }
+
+    .telemetry-value.cyan {
+      color: var(--cyan);
+    }
+
+    .telemetry-sub {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--elisa-muted);
+    }
+
+    /* Hardware Port Faceplate Mini-Visualizer */
+    .chassis-faceplate {
+      background: #04091e;
+      border: 1px solid var(--elisa-border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .port-cluster {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sfp-cage {
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #0f1b42;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sfp-cage.active-port {
+      border-color: var(--cyan);
+      color: #ffffff;
+    }
+
+    .led-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+    }
+
+    .led-indicator.amber {
+      background: var(--amber);
+      box-shadow: 0 0 6px var(--amber);
+    }
+
+    /* Prominent Run Simulation Button */
+    .run-sim-btn {
+      width: 100%;
+      padding: 13px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--cyan);
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(56, 198, 244, 0.3);
+      transition: all 0.15s ease;
+      margin-top: auto;
+    }
+
+    .run-sim-btn:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    /* Right Column: Terminal & Impact Metrics */
+    .terminal-window {
+      flex: 1;
+      background: #020617;
+      border: 1px solid var(--elisa-border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 280px;
+    }
+
+    .terminal-topbar {
+      height: 34px;
+      background: #071033;
+      border-bottom: 1px solid var(--elisa-border);
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--elisa-muted);
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .terminal-dots span {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #1e293b;
+    }
+
+    .terminal-body {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.65;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .term-line {
+      padding: 6px 10px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid transparent;
+      animation: msgFadeIn 0.18s ease-out;
+    }
+
+    .term-line.error {
+      background: var(--crimson-dim);
+      border-color: rgba(255, 84, 104, 0.4);
+      color: #fecdd3;
+    }
+
+    .term-line.warn {
+      background: var(--amber-dim);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #fde68a;
+    }
+
+    .term-line.match {
+      background: var(--cyan-dim);
+      border-color: rgba(56, 198, 244, 0.45);
+      color: #e0f2fe;
+    }
+
+    .term-line.success {
+      background: var(--green-dim);
+      border-color: rgba(61, 220, 151, 0.45);
+      color: #d1fae5;
+      font-weight: 600;
+    }
+
+    .term-cta-btn {
+      margin-top: 6px;
+      align-self: flex-start;
+      background: var(--teams-purple);
+      border: 1px solid #7b83eb;
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .term-cta-btn:hover {
+      background: var(--teams-purple-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Impact Metrics Strip */
+    .impact-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .impact-box {
+      background: var(--elisa-card-alt);
+      border: 1px solid var(--elisa-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .impact-label {
+      font-size: 11px;
+      color: var(--elisa-muted);
+    }
+
+    .impact-val {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ==========================================================================
+       SLIDE-OVER DRAWER: X-RAY DIGITAL MASTER & CONTEXT LAYER
+       ========================================================================== */
+    .xray-drawer {
+      position: fixed;
+      top: 48px;
+      right: 0;
+      bottom: 0;
+      width: 540px;
+      max-width: 100vw;
+      background: rgba(10, 22, 69, 0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-left: 1px solid var(--cyan);
+      box-shadow: -16px 0 40px rgba(2, 6, 23, 0.75);
+      z-index: 180;
+      transform: translateX(100%);
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .xray-drawer.open {
+      transform: translateX(0);
+    }
+
+    .xray-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(56, 198, 244, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(3, 10, 38, 0.6);
+    }
+
+    .xray-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .xray-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .xray-subtitle {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .xray-close-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .xray-close-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+    }
+
+    .xray-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .xray-section-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* 1. Elisa 5-Layer Network Model Stack */
+    .layer-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .layer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: rgba(3, 10, 38, 0.65);
+      border: 1px solid #1b2c6e;
+      font-size: 12px;
+    }
+
+    .layer-row.context-layer {
+      border: 1.5px dashed var(--cyan);
+      background: rgba(56, 198, 244, 0.08);
+      padding: 10px 12px;
+    }
+
+    .layer-name {
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .layer-status {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .layer-status.missing {
+      color: var(--crimson);
+    }
+
+    .layer-status.populated {
+      color: var(--green);
+    }
+
+    /* 2. Interactive SVG Knowledge Graph */
+    .graph-container {
+      background: #030a26;
+      border: 1px solid #1b2c6e;
+      border-radius: 8px;
+      padding: 10px;
+      position: relative;
+    }
+
+    .graph-svg {
+      width: 100%;
+      height: 215px;
+      display: block;
+    }
+
+    /* 3. Structured JSON Assertion Inspector */
+    .json-tabs-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .json-tab-btn {
+      background: rgba(3, 10, 38, 0.7);
+      border: 1px solid #1b2c6e;
+      color: #94a3b8;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .json-tab-btn.active {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(56, 198, 244, 0.14);
+    }
+
+    .json-inspector {
+      background: #020617;
+      border: 1px solid #1b2c6e;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.52;
+      color: #e2e8f0;
+      overflow-x: auto;
+      white-space: pre;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .j-key { color: #38c6f4; }
+    .j-str { color: #3ddc97; }
+    .j-num { color: #fbbf24; }
+    .j-bool { color: #c084fc; }
+    .j-null { color: #ff5468; }
+
+    /* ==========================================================================
+       FLOATING TOAST NOTIFICATION
+       ========================================================================== */
+    .toast-container {
+      position: fixed;
+      top: 62px;
+      right: 20px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast-card {
+      background: rgba(2, 6, 23, 0.95);
+      border: 1px solid var(--cyan);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 198, 244, 0.25);
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      max-width: 430px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      pointer-events: auto;
+      animation: toastSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast-card.warn {
+      border-color: var(--amber);
+    }
+
+    @keyframes toastSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .toast-title {
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 2px;
+    }
+
+    .toast-card.warn .toast-title {
+      color: var(--amber);
+    }
+
+    .toast-body {
+      color: #cbd5e1;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 1100px) {
+      .noc-grid {
+        grid-template-columns: 1fr;
+      }
+      .scenario-tabs {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .quick-chips-bar {
+        grid-template-columns: 1fr;
+      }
+      .teams-sidebar {
+        width: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       TOP GLOBAL PRESENTATION BAR
+       ======================================================================== -->
+  <header class="top-bar">
+    <div class="brand-group">
+      <div class="brand-logo">
+        <span class="brand-logo-mark">SP</span>
+        <span>Sisu<span class="accent">Probe</span></span>
+      </div>
+      <span class="brand-meta" id="ui-brand-badge">NoNomads × Elisa 2026</span>
+    </div>
+
+    <div class="view-switcher">
+      <button type="button" class="view-btn active-teams" id="btn-view-teams" onclick="switchView('teams')">
+        <span id="ui-tab-teams">☀️ 14:15 · Microsoft Teams</span>
+        <span class="kbd-hint">1</span>
+      </button>
+      <button type="button" class="view-btn" id="btn-view-noc" onclick="switchView('noc')">
+        <span id="ui-tab-noc">🌙 03:00 · Elisa NOC Autopilot</span>
+        <span class="kbd-hint">2</span>
+      </button>
+    </div>
+
+    <div class="top-controls">
+      <button type="button" class="ctrl-btn probe-btn" id="btn-trigger-probe" onclick="triggerProbe()">
+        <span id="ui-btn-probe">⚡ Trigger Probe</span>
+        <span class="kbd-hint">Space</span>
+      </button>
+
+      <button type="button" class="ctrl-btn xray-btn" id="btn-xray-toggle" onclick="toggleXRay()">
+        <span id="ui-btn-xray">👁️ X-Ray: Context Graph</span>
+        <span class="xray-count" id="xray-badge-count">(0)</span>
+        <span class="kbd-hint">X</span>
+      </button>
+
+      <button type="button" class="ctrl-btn" id="btn-reset" onclick="resetDemo()">
+        <span id="ui-btn-reset">🔄 Reset</span>
+      </button>
+
+      <div class="lang-switch" role="group" aria-label="Language Switcher">
+        <button type="button" class="lang-btn active" id="lang-en" onclick="setLanguage('en')">EN</button>
+        <button type="button" class="lang-btn" id="lang-ru" onclick="setLanguage('ru')">RU</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Floating Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ========================================================================
+       MAIN VIEWPORT
+       ======================================================================== -->
+  <main class="viewport">
+
+    <!-- ======================================================================
+         VIEW 1: 14:15 MICROSOFT TEAMS
+         ====================================================================== -->
+    <section class="view-pane active" id="view-teams">
+      <div class="teams-layout">
+
+        <!-- 1. Far-Left App Rail (64px) -->
+        <nav class="teams-rail" aria-label="Microsoft Teams App Rail">
+          <button type="button" class="rail-item" onclick="selectRail('activity')">
+            <svg class="rail-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span id="ui-rail-activity">Activity</span>
+            <span class="rail-badge" id="rail-unread-badge">1</span>
+          </button>
+          <button type="button" class="rail-item active" onclick="selectRail('chat')">
+            <svg class="rail-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span id="ui-rail-chat">Chat</span>
+          </button>
+          <button type="button" class="rail-item" onclick="selectRail('teams')">
+            <svg class="rail-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span id="ui-rail-teams">Teams</span>
+          </button>
+          <button type="button" class="rail-item" onclick="selectRail('calendar')">
+            <svg class="rail-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span id="ui-rail-calendar">Calendar</span>
+          </button>
+          <button type="button" class="rail-item" onclick="selectRail('calls')">
+            <svg class="rail-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span id="ui-rail-calls">Calls</span>
+          </button>
+
+          <div class="rail-spacer"></div>
+
+          <div class="erkki-profile-rail" title="Erkki Korhonen · Senior Transport Specialist">
+            EK
+            <span class="status-dot online"></span>
+          </div>
+        </nav>
+
+        <!-- 2. Chat & Channel List Sidebar (280px) -->
+        <aside class="teams-sidebar">
+          <div class="sidebar-header">
+            <span class="sidebar-title" id="ui-sidebar-title">Chat</span>
+            <span class="teams-clock-tag">14:15 EET</span>
+          </div>
+
+          <div class="sidebar-section-label" id="ui-pinned-dms">Pinned Direct Messages</div>
+          <div class="contact-list">
+            <button type="button" class="contact-item active" id="contact-veikko" onclick="selectContact('veikko')">
+              <div class="avatar vl">
+                VL
+                <span class="status-dot online"></span>
+              </div>
+              <div class="contact-info">
+                <div class="contact-top">
+                  <span class="contact-name" id="ui-veikko-name">Veikko Laine (Field Eng)</span>
+                  <span class="contact-time" id="ui-veikko-time">14:12</span>
+                </div>
+                <div class="contact-top">
+                  <span class="contact-sub" id="ui-veikko-sub">TRN-088 · SFP issue...</span>
+                  <span class="unread-pill">1</span>
+                </div>
+              </div>
+            </button>
+
+            <button type="button" class="contact-item" id="contact-matti" onclick="selectContact('matti')">
+              <div class="avatar mp">
+                MP
+                <span class="status-dot away"></span>
+              </div>
+              <div class="contact-info">
+                <div class="contact-top">
+                  <span class="contact-name" id="ui-matti-name">Matti Penttilä (Lead Ops)</span>
+                  <span class="contact-time">11:40</span>
+                </div>
+                <div class="contact-sub" id="ui-matti-sub">Let's review FW v4.2 rollout</div>
+              </div>
+            </button>
+          </div>
+
+          <div class="sidebar-section-label" id="ui-channels-header">Channels (Elisa Network Ops)</div>
+          <div class="contact-list">
+            <button type="button" class="channel-item" onclick="selectChannel('noc-general')">
+              <span class="channel-hash">#</span>
+              <span>noc-general</span>
+            </button>
+            <button type="button" class="channel-item" onclick="selectChannel('northern-finland-access')">
+              <span class="channel-hash">#</span>
+              <span>northern-finland-access</span>
+            </button>
+          </div>
+
+          <div class="sidebar-context-card">
+            <div class="sidebar-context-title">
+              <span id="ui-probe-card-title">SisuProbe Gap Detector</span>
+              <span>14:15</span>
+            </div>
+            <div id="ui-probe-card-desc">
+              Blind spot detected in <strong>as-experienced</strong> layer for <strong>NX-19 (FW v4.1)</strong> post-SFP swap &amp; Oulu/Lapland access barrier.
+            </div>
+          </div>
+        </aside>
+
+        <!-- 3. Main Chat Window -->
+        <div class="teams-main">
+          <!-- Header -->
+          <div class="chat-header">
+            <div class="chat-header-left">
+              <div class="avatar vl">
+                VL
+                <span class="status-dot online"></span>
+              </div>
+              <div class="chat-title-group">
+                <span class="chat-user-title" id="ui-chat-header-name">Veikko Laine · Junior Field Engineer</span>
+                <span class="chat-site-meta">
+                  <span>·</span>
+                  <span id="ui-chat-header-site">On-site: <strong>TRN-088 (Oulu Ring)</strong></span>
+                </span>
+              </div>
+            </div>
+
+            <div class="chat-header-actions">
+              <button type="button" class="icon-action-btn" title="Audio Call" onclick="triggerCallToast('audio')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </button>
+              <button type="button" class="icon-action-btn" title="Video Call" onclick="triggerCallToast('video')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Message History Area -->
+          <div class="chat-messages" id="chat-messages">
+            <!-- Populated dynamically via renderChatMessages() -->
+          </div>
+
+          <!-- Typing Indicator -->
+          <div style="padding: 0 28px;">
+            <div class="typing-row" id="typing-indicator">
+              <div class="avatar vl" style="width: 28px; height: 28px; font-size: 11px;">VL</div>
+              <div class="typing-bubble">
+                <span id="ui-typing-text">Veikko Laine is typing</span>
+                <span class="typing-dots"><span></span><span></span><span></span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick-Reply Chips Bar & Input Composer -->
+          <div class="chat-composer-zone">
+            <div class="chips-header">
+              <span class="chips-header-label" id="ui-chips-label">⚡ Quick-Reply as Erkki (Senior Specialist) — Click a chip or type below:</span>
+              <span id="ui-chips-hint">Cunningham's Law Trigger</span>
+            </div>
+
+            <div class="quick-chips-bar">
+              <button type="button" class="reply-chip" id="chip-1" onclick="sendQuickChip(1)">
+                <div class="chip-kicker">
+                  <span id="ui-chip1-title">Chip 1 · SFP Counter Rule (NX-19)</span>
+                  <span>↵</span>
+                </div>
+                <div class="chip-preview" id="ui-chip1-text">
+                  STOP! Don't reboot! On NX-19 with FW v4.1, green link status lies after SFP swap. If counters are zero, just disable the interface, wait 5s, and enable it!
+                </div>
+              </button>
+
+              <button type="button" class="reply-chip" id="chip-2" onclick="sendQuickChip(2)">
+                <div class="chip-kicker">
+                  <span id="ui-chip2-title">Chip 2 · Northern Barrier Key</span>
+                  <span>↵</span>
+                </div>
+                <div class="chip-preview" id="ui-chip2-text">
+                  For the Northern road barrier: the key isn't in the system—it's in the weatherproof lockbox behind the transformer hut (PIN 4412).
+                </div>
+              </button>
+
+              <button type="button" class="reply-chip chip-hunch" id="chip-3" onclick="sendQuickChip(3)">
+                <div class="chip-kicker">
+                  <span id="ui-chip3-title">Chip 3 · Conflicting Hunch Test</span>
+                  <span>↵</span>
+                </div>
+                <div class="chip-preview" id="ui-chip3-text">
+                  Maybe swap the fiber patch cord or reboot the line card? Not 100% sure.
+                </div>
+              </button>
+            </div>
+
+            <form class="composer-box" onsubmit="handleComposerSubmit(event)">
+              <div class="composer-toolbar">
+                <span class="toolbar-item">B</span>
+                <span class="toolbar-item" style="font-style: italic;">I</span>
+                <span class="toolbar-item" style="text-decoration: underline;">U</span>
+                <span class="toolbar-item">&lt;/&gt;</span>
+                <span style="margin-left: auto; font-size: 11px;" id="ui-composer-status">Replying as Erkki Korhonen</span>
+              </div>
+              <div class="composer-input-row">
+                <input
+                  type="text"
+                  class="composer-input"
+                  id="chat-input"
+                  placeholder="Type a reply to Veikko Laine... (Press Enter to send)"
+                  autocomplete="off"
+                />
+                <button type="submit" class="send-btn" title="Send message (Enter)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         VIEW 2: 03:00 ELISA NOC AUTOPILOT
+         ====================================================================== -->
+    <section class="view-pane" id="view-noc">
+      <div class="noc-layout">
+
+        <!-- Header -->
+        <div class="noc-top-header">
+          <div class="noc-title-block">
+            <span class="noc-clock-badge">03:00:01 EET</span>
+            <div>
+              <h1 class="noc-heading" id="ui-noc-heading">Elisa Autonomous NOC Autopilot · Night Shift</h1>
+              <p class="noc-subheading" id="ui-noc-subheading">Closed-loop fault remediation powered by the Digital Master Context (as-experienced) Layer</p>
+            </div>
+          </div>
+
+          <div class="noc-context-status-pill" id="noc-context-banner">
+            <!-- Dynamically updated -->
+          </div>
+        </div>
+
+        <!-- Top Scenario Selector Bar (4 Interactive Test Tabs) -->
+        <div class="scenario-tabs" role="tablist">
+          <button type="button" class="scenario-tab active" id="tab-btn-A" onclick="selectScenario('A')">
+            <div class="tab-top-row">
+              <span>TAB A · TRN-105</span>
+              <span class="tab-tag" id="ui-tabA-badge">Exact Match</span>
+            </div>
+            <div class="tab-title" id="ui-tabA-title">TRN-105 · NX-19 · FW v4.1</div>
+            <div class="tab-desc" id="ui-tabA-desc">Tests autonomous remediation using Erkki's rule</div>
+          </button>
+
+          <button type="button" class="scenario-tab" id="tab-btn-B" onclick="selectScenario('B')">
+            <div class="tab-top-row">
+              <span>TAB B · TRN-105</span>
+              <span class="tab-tag" id="ui-tabB-badge">Validity Expired</span>
+            </div>
+            <div class="tab-title" id="ui-tabB-title">TRN-105 · Upgraded to FW v4.2</div>
+            <div class="tab-desc" id="ui-tabB-desc">Proves valid_to blocks expired v4.1 workaround</div>
+          </button>
+
+          <button type="button" class="scenario-tab" id="tab-btn-C" onclick="selectScenario('C')">
+            <div class="tab-top-row">
+              <span>TAB C · TRN-210</span>
+              <span class="tab-tag" id="ui-tabC-badge">Entity Mismatch</span>
+            </div>
+            <div class="tab-title" id="ui-tabC-title">TRN-210 · Model NX-24 · FW v6.0</div>
+            <div class="tab-desc" id="ui-tabC-desc">Proves NX-19 rule is not applied to NX-24 hardware</div>
+          </button>
+
+          <button type="button" class="scenario-tab" id="tab-btn-D" onclick="selectScenario('D')">
+            <div class="tab-top-row">
+              <span>TAB D · LAPLAND</span>
+              <span class="tab-tag" id="ui-tabD-badge">Access Context</span>
+            </div>
+            <div class="tab-title" id="ui-tabD-title">Site Dispatch · Northern Barrier</div>
+            <div class="tab-desc" id="ui-tabD-desc">Attaches captured lockbox PIN (4412) to work order</div>
+          </button>
+        </div>
+
+        <!-- Main NOC Split Grid -->
+        <div class="noc-grid">
+
+          <!-- Left Column: Live Node Telemetry & Topology Status Card -->
+          <div class="noc-card">
+            <div class="card-header">
+              <span class="card-title" id="ui-telemetry-card-title">Live Node Telemetry &amp; Hardware State</span>
+              <span class="card-kicker" id="telemetry-region-label">OULU / LAPLAND RING</span>
+            </div>
+
+            <div class="node-identity-box">
+              <div class="identity-item">
+                <span class="identity-label" id="ui-lbl-node">Active Node ID</span>
+                <span class="identity-val" id="val-node-id">TRN-105</span>
+              </div>
+              <div class="identity-item">
+                <span class="identity-label" id="ui-lbl-model">Hardware Model</span>
+                <span class="identity-val" id="val-hw-model">NX-19 (2019 Batch)</span>
+              </div>
+              <div class="identity-item">
+                <span class="identity-label" id="ui-lbl-fw">Firmware Version</span>
+                <span class="identity-val" id="val-fw-ver">v4.1-build88</span>
+              </div>
+              <div class="identity-item">
+                <span class="identity-label" id="ui-lbl-uptime">Chassis Uptime</span>
+                <span class="identity-val" id="val-uptime">412d 19h 04m</span>
+              </div>
+            </div>
+
+            <div class="telemetry-grid">
+              <div class="telemetry-box" id="tbox-1">
+                <span class="telemetry-label" id="tbox-1-lbl">SFP Status (ge-0/0/1)</span>
+                <span class="telemetry-value cyan" id="tbox-1-val">REPLACED</span>
+                <span class="telemetry-sub" id="tbox-1-sub">10GBASE-LR · Serial #SFP-992</span>
+              </div>
+
+              <div class="telemetry-box" id="tbox-2">
+                <span class="telemetry-label" id="tbox-2-lbl">Link State</span>
+                <span class="telemetry-value green" id="tbox-2-val">UP (GREEN)</span>
+                <span class="telemetry-sub" id="tbox-2-sub">L1 Carrier Detected</span>
+              </div>
+
+              <div class="telemetry-box" id="tbox-3">
+                <span class="telemetry-label" id="tbox-3-lbl">Optics RX Power</span>
+                <span class="telemetry-value green" id="tbox-3-val">-3.1 dBm</span>
+                <span class="telemetry-sub" id="tbox-3-sub">Nominal (-1.0 to -9.5 dBm)</span>
+              </div>
+
+              <div class="telemetry-box alert-state" id="tbox-4">
+                <span class="telemetry-label" id="tbox-4-lbl">Traffic Counters</span>
+                <span class="telemetry-value crimson" id="tbox-4-val">0 bps</span>
+                <span class="telemetry-sub" id="tbox-4-sub">Stuck post-SFP swap</span>
+              </div>
+            </div>
+
+            <div class="chassis-faceplate">
+              <div class="port-cluster">
+                <span style="color: #64748b;">CHASSIS SLOT 0:</span>
+                <span class="sfp-cage active-port">
+                  <span class="led-indicator" id="port-led"></span>
+                  <span id="port-label">ge-0/0/1 [UPLINK]</span>
+                </span>
+              </div>
+              <span id="faceplate-status" style="color: var(--amber);">ASIC COUNTER LOCK</span>
+            </div>
+
+            <button type="button" class="run-sim-btn" id="btn-run-sim" onclick="runNocSimulation()">
+              <span id="ui-btn-run-sim">▶ Run 03:00 AM Incident Simulation</span>
+            </button>
+          </div>
+
+          <!-- Right Column: Autonomous Agent Reasoning Stream & Impact Metrics -->
+          <div class="noc-card">
+            <div class="card-header">
+              <span class="card-title" id="ui-terminal-card-title">Autonomous Agent Reasoning Stream</span>
+              <span class="card-kicker" id="terminal-scenario-tag">SCENARIO A · TRN-105</span>
+            </div>
+
+            <div class="terminal-window">
+              <div class="terminal-topbar">
+                <div class="terminal-dots">
+                  <span></span><span></span><span></span>
+                </div>
+                <span>elisa-noc-autopilot://context-engine/v2026.11</span>
+                <span id="terminal-state-label">READY</span>
+              </div>
+              <div class="terminal-body" id="terminal-body">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <div class="impact-strip">
+              <div class="impact-box">
+                <span class="impact-label" id="ui-impact-mttr-lbl">Mean Time To Resolve (MTTR)</span>
+                <span class="impact-val" id="val-impact-mttr">4.2 sec</span>
+              </div>
+              <div class="impact-box">
+                <span class="impact-label" id="ui-impact-wake-lbl">03:00 AM Engineer Wakeups</span>
+                <span class="impact-val" id="val-impact-wake">0 humans</span>
+              </div>
+              <div class="impact-box">
+                <span class="impact-label" id="ui-impact-truck-lbl">Unnecessary Truck Rolls Saved</span>
+                <span class="impact-val" id="val-impact-truck">100% Verified</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================
+       SLIDE-OVER DRAWER: X-RAY DIGITAL MASTER & CONTEXT LAYER
+       ======================================================================== -->
+  <aside class="xray-drawer" id="xray-drawer" aria-label="X-Ray Digital Master and Context Layer">
+    <div class="xray-header">
+      <div class="xray-title-wrap">
+        <div class="xray-title">
+          <span>👁️</span>
+          <span id="ui-xray-title">X-Ray: Digital Master &amp; Context Layer</span>
+        </div>
+        <div class="xray-subtitle" id="ui-xray-subtitle">Real-time epistemic graph harvesting from Teams chat stream</div>
+      </div>
+      <button type="button" class="xray-close-btn" onclick="toggleXRay()" title="Close (X)">✕</button>
+    </div>
+
+    <div class="xray-content">
+      <!-- 1. Elisa 5-Layer Network Model Stack -->
+      <div>
+        <div class="xray-section-title">
+          <span id="ui-sec-layers">1. ELISA 5-LAYER NETWORK MODEL STACK</span>
+          <span style="font-family: var(--font-mono); font-size: 10.5px; color: #94a3b8;">DIGITAL MASTER</span>
+        </div>
+        <div class="layer-stack">
+          <div class="layer-row">
+            <span class="layer-name" id="ui-layer-1">Intent / Design (as-designed)</span>
+            <span class="layer-status" id="ui-layer-ready-1">READY</span>
+          </div>
+          <div class="layer-row">
+            <span class="layer-name" id="ui-layer-2">Physical / Passive (as-built)</span>
+            <span class="layer-status" id="ui-layer-ready-2">READY</span>
+          </div>
+          <div class="layer-row">
+            <span class="layer-name" id="ui-layer-3">Runtime / Active (as-running)</span>
+            <span class="layer-status" id="ui-layer-ready-3">READY</span>
+          </div>
+          <div class="layer-row context-layer">
+            <span class="layer-name" id="ui-layer-4" style="color: #ffffff; font-weight: 700;">Context (as-experienced)</span>
+            <span class="layer-status missing" id="xray-context-layer-status">MISSING (GAP DETECTED)</span>
+          </div>
+          <div class="layer-row">
+            <span class="layer-name" id="ui-layer-5">Event Stream (as-observed)</span>
+            <span class="layer-status" id="ui-layer-ready-5">READY</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Interactive SVG Knowledge Graph Visualization -->
+      <div>
+        <div class="xray-section-title">
+          <span id="ui-sec-graph">2. KNOWLEDGE GRAPH ENTITY BINDING &amp; GATING</span>
+          <span id="xray-graph-badge" style="font-family: var(--font-mono); font-size: 10.5px; color: var(--crimson);">UNBOUND</span>
+        </div>
+        <div class="graph-container">
+          <svg class="graph-svg" viewBox="0 0 490 215" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arrow-cyan" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#38c6f4" />
+              </marker>
+              <marker id="arrow-green" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#3ddc97" />
+              </marker>
+              <marker id="arrow-dim" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
+              </marker>
+            </defs>
+
+            <!-- Edges -->
+            <line id="edge-hw" x1="215" y1="75" x2="125" y2="42" stroke="#38c6f4" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#arrow-cyan)" />
+            <line id="edge-fw" x1="265" y1="75" x2="365" y2="42" stroke="#38c6f4" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#arrow-cyan)" />
+            <line id="edge-nodes" x1="95" y1="56" x2="95" y2="122" stroke="#38c6f4" stroke-width="1.6" marker-end="url(#arrow-cyan)" />
+            <line id="edge-barrier" x1="240" y1="108" x2="240" y2="160" stroke="#475569" stroke-width="1.5" stroke-dasharray="3 3" marker-end="url(#arrow-dim)" />
+            <line x1="310" y1="102" x2="385" y2="148" stroke="#475569" stroke-width="1.2" stroke-dasharray="2 4" marker-end="url(#arrow-dim)" />
+
+            <!-- Center Node: Context Assertion #CA-204 -->
+            <g id="node-center">
+              <rect id="rect-center" x="155" y="68" width="170" height="40" rx="7" fill="#0a1645" stroke="#ff5468" stroke-width="1.8" />
+              <text x="240" y="85" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="10.5" font-weight="700" id="svg-center-title">Context Assertion #CA-204</text>
+              <text x="240" y="99" text-anchor="middle" fill="#ff5468" font-family="JetBrains Mono, monospace" font-size="9.5" id="svg-center-sub">AWAITING PROBE CAPTURE</text>
+            </g>
+
+            <!-- Linked Hardware: NX-19 -->
+            <g>
+              <rect x="16" y="16" width="155" height="38" rx="6" fill="#071033" stroke="#38c6f4" stroke-width="1.3" />
+              <text x="93" y="32" text-anchor="middle" fill="#38c6f4" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">Hardware: NX-19</text>
+              <text x="93" y="46" text-anchor="middle" fill="#94a3b8" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5">2019 Transport Cohort</text>
+            </g>
+
+            <!-- Linked Firmware Gate: FW v4.1 -->
+            <g>
+              <rect x="318" y="16" width="158" height="38" rx="6" fill="#071033" stroke="#38c6f4" stroke-width="1.3" />
+              <text x="397" y="32" text-anchor="middle" fill="#38c6f4" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">FW: v4.1 Gate</text>
+              <text x="397" y="46" text-anchor="middle" fill="#fbbf24" font-family="JetBrains Mono, monospace" font-size="9">valid_to: FW &gt; v4.1</text>
+            </g>
+
+            <!-- Linked Cohort Nodes: TRN-042, TRN-088, TRN-105 -->
+            <g>
+              <rect x="14" y="126" width="162" height="44" rx="6" fill="#071033" stroke="#3ddc97" stroke-width="1.3" />
+              <text x="95" y="143" text-anchor="middle" fill="#3ddc97" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">Linked Cohort Nodes</text>
+              <text x="95" y="159" text-anchor="middle" fill="#e2e8f0" font-family="JetBrains Mono, monospace" font-size="9.5">TRN-042, TRN-088, TRN-105</text>
+            </g>
+
+            <!-- Site Access Context Node -->
+            <g>
+              <rect id="rect-barrier" x="184" y="162" width="136" height="42" rx="6" fill="#071033" stroke="#475569" stroke-width="1.2" />
+              <text x="252" y="179" text-anchor="middle" fill="#cbd5e1" font-family="JetBrains Mono, monospace" font-size="9.5" font-weight="700">Northern Barrier</text>
+              <text x="252" y="194" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="9" id="svg-barrier-sub">Lockbox PIN: Pending</text>
+            </g>
+
+            <!-- Unlinked / Excluded Node (Dimmed): TRN-210 -->
+            <g opacity="0.48">
+              <rect x="332" y="148" width="146" height="46" rx="6" fill="#050b1f" stroke="#475569" stroke-width="1" stroke-dasharray="3 2" />
+              <text x="405" y="166" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">TRN-210 (Excluded)</text>
+              <text x="405" y="181" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono, monospace" font-size="9">Model: NX-24 · FW: v6.0</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 3. Structured JSON Assertion Inspector -->
+      <div>
+        <div class="xray-section-title">
+          <span id="ui-sec-json">3. STRUCTURED JSON ASSERTION INSPECTOR</span>
+          <div class="json-tabs-row">
+            <button type="button" class="json-tab-btn active" id="json-tab-sfp" onclick="selectJsonTab('sfp')">#ctx-nx19-sfp-01</button>
+            <button type="button" class="json-tab-btn" id="json-tab-barrier" onclick="selectJsonTab('barrier')">#ctx-lapland-barrier-02</button>
+          </div>
+        </div>
+        <div class="json-inspector" id="json-inspector-box"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================================
+       APPLICATION SCRIPT (100% SELF-CONTAINED)
+       ======================================================================== -->
+  <script>
+    /* ========================================================================
+       BILINGUAL DICTIONARY (EN / RU)
+       ======================================================================== */
+    const I18N = {
+      en: {
+        brandBadge: "NoNomads × Elisa 2026",
+        tabTeams: "☀️ 14:15 · Microsoft Teams",
+        tabNoc: "🌙 03:00 · Elisa NOC Autopilot",
+        btnProbe: "⚡ Trigger Probe",
+        btnXray: "👁️ X-Ray: Context Graph",
+        btnReset: "🔄 Reset",
+
+        railActivity: "Activity",
+        railChat: "Chat",
+        railTeams: "Teams",
+        railCalendar: "Calendar",
+        railCalls: "Calls",
+
+        sidebarTitle: "Chat",
+        pinnedDms: "Pinned Direct Messages",
+        veikkoName: "Veikko Laine (Field Eng)",
+        veikkoSubInitial: "Arrived at site TRN-088...",
+        veikkoSubProbe: "TRN-088 · SFP issue...",
+        mattiName: "Matti Penttilä (Lead Ops)",
+        mattiSub: "Let's review FW v4.2 rollout",
+        channelsHeader: "Channels (Elisa Network Ops)",
+        probeCardTitle: "SisuProbe Gap Detector",
+        probeCardDesc: "Blind spot detected in <strong>as-experienced</strong> layer for <strong>NX-19 (FW v4.1)</strong> post-SFP swap &amp; Northern access barrier.",
+
+        chatHeaderName: "Veikko Laine · Junior Field Engineer",
+        chatHeaderSite: "On-site: <strong>TRN-088 (Oulu Ring)</strong>",
+        chatDateToday: "Today · November 7, 2026",
+        typingText: "Veikko Laine is typing...",
+
+        msgBaseline: "Arrived at site TRN-088. Starting scheduled SFP replacement on uplink <span class=\"msg-highlight-code\">ge-0/0/1</span>.",
+        msgProbe: "Hey Erkki! Swapped the SFP on <strong>TRN-088</strong> (<span class=\"msg-highlight-code\">NX-19, FW v4.1</span>). Link is UP (green), RX optics normal (-3.2 dBm), but traffic counters are stuck at 0. Looks like a dead forwarding plane — I'm going to pull the power cords and hard-reboot the entire chassis to factory defaults right now, ok? Also, any idea where the key to the Northern private road barrier is?",
+
+        chipsLabel: "⚡ Quick-Reply as Erkki (Senior Specialist) — Click a chip or type below:",
+        chipsHint: "Cunningham's Law Trigger",
+        chip1Title: "Chip 1 · SFP Counter Rule (NX-19)",
+        chip1Text: "STOP! Don't reboot! On NX-19 with FW v4.1, green link status lies after SFP swap. If counters are zero, just disable the interface, wait 5s, and enable it!",
+        chip2Title: "Chip 2 · Northern Barrier Key",
+        chip2Text: "For the Northern road barrier: the key isn't in the system—it's in the weatherproof lockbox behind the transformer hut (PIN 4412).",
+        chip3Title: "Chip 3 · Conflicting Hunch Test",
+        chip3Text: "Maybe swap the fiber patch cord or reboot the line card? Not 100% sure.",
+
+        composerStatus: "Replying as Erkki Korhonen",
+        composerPlaceholder: "Type a reply to Veikko Laine... (Press Enter to send)",
+
+        veikkoReplySuccess: "Disabled <span class=\"msg-highlight-code\">ge-0/0/1</span>, waited 5s, enabled. Counters are flying (<strong>4.2 Gbps</strong>)! You just saved me a 2-hour outage. And got the lockbox PIN, thanks!",
+        veikkoReplyBarrierOnly: "Got the weatherproof lockbox PIN (<strong>4412</strong>) behind the transformer hut — barrier is open! Still waiting on what to do about <span class=\"msg-highlight-code\">ge-0/0/1</span> stuck at 0 bps before I pull the power cords!",
+        veikkoReplyHunch: "Tried swapping the fiber patch cord, still 0 bps on <span class=\"msg-highlight-code\">ge-0/0/1</span>... Are you sure before I pull chassis power?",
+
+        toastCaptureTitle: "⚡ Silent Capture: Context Assertion Extracted",
+        toastCaptureSfp: "Extracted structured Context Assertion from Teams DM -> Bound to [Model: NX-19, FW: v4.1, Nodes: TRN-088, TRN-105].",
+        toastCaptureBarrier: "Extracted Site Access Context from Teams DM -> Bound to [Site: Northern Lapland Barrier, Lockbox PIN: 4412].",
+        toastHunchTitle: "🛡️ Epistemic Gate: Low-Confidence Hunch (0.38)",
+        toastHunchBody: "Hedging detected ('Maybe... Not 100% sure'). Logged as unverified hypothesis; NOT promoted to Autopilot Context Layer.",
+
+        xrayTitle: "X-Ray: Digital Master & Context Layer",
+        xraySubtitle: "Real-time epistemic graph harvesting from Teams chat stream",
+        secLayers: "1. ELISA 5-LAYER NETWORK MODEL STACK",
+        layer1: "Intent / Design (as-designed)",
+        layer2: "Physical / Passive (as-built)",
+        layer3: "Runtime / Active (as-running)",
+        layer4: "Context (as-experienced)",
+        layer5: "Event Stream (as-observed)",
+        layerReady: "READY",
+        layerMissing: "MISSING (GAP DETECTED)",
+        layerPopulated: "POPULATED (LIVE LINKED)",
+        secGraph: "2. KNOWLEDGE GRAPH ENTITY BINDING & GATING",
+        secJson: "3. STRUCTURED JSON ASSERTION INSPECTOR",
+
+        nocHeading: "Elisa Autonomous NOC Autopilot · Night Shift",
+        nocSubheading: "Closed-loop fault remediation powered by the Digital Master Context (as-experienced) Layer",
+        nocBannerEmpty: "⚠️ Context Layer (as-experienced): 0 Assertions Captured",
+        nocBannerActive: "✅ Context Layer (as-experienced): Live Linked & Verified",
+
+        tabABadge: "Exact Match",
+        tabATitle: "TRN-105 · NX-19 · FW v4.1",
+        tabADesc: "Tests autonomous remediation using Erkki's captured rule",
+
+        tabBBadge: "Validity Expired",
+        tabBTitle: "TRN-105 · Upgraded to FW v4.2",
+        tabBDesc: "Proves valid_to blocks expired v4.1 workaround",
+
+        tabCBadge: "Entity Mismatch",
+        tabCTitle: "TRN-210 · Model NX-24 · FW v6.0",
+        tabCDesc: "Proves NX-19 rule is not applied to NX-24 hardware",
+
+        tabDBadge: "Access Context",
+        tabDTitle: "Site Dispatch · Northern Barrier",
+        tabDDesc: "Attaches captured lockbox PIN (4412) to work order",
+
+        telemetryCardTitle: "Live Node Telemetry & Hardware State",
+        lblNode: "Active Node ID",
+        lblModel: "Hardware Model",
+        lblFw: "Firmware Version",
+        lblUptime: "Chassis Uptime",
+
+        btnRunSim: "▶ Run 03:00 AM Incident Simulation",
+        terminalCardTitle: "Autonomous Agent Reasoning Stream",
+        impactMttrLbl: "Mean Time To Resolve (MTTR)",
+        impactWakeLbl: "03:00 AM Engineer Wakeups",
+        impactTruckLbl: "Unnecessary Truck Rolls Saved",
+        goBackTeamsBtn: "⬅ Go to 14:15 Teams to capture Erkki's knowledge first"
+      },
+      ru: {
+        brandBadge: "NoNomads × Elisa 2026",
+        tabTeams: "☀️ 14:15 · Microsoft Teams",
+        tabNoc: "🌙 03:00 · Автопилот NOC Elisa",
+        btnProbe: "⚡ Запустить Пробу",
+        btnXray: "👁️ X-Ray: Граф Контекста",
+        btnReset: "🔄 Сброс",
+
+        railActivity: "События",
+        railChat: "Чат",
+        railTeams: "Команды",
+        railCalendar: "Календарь",
+        railCalls: "Звонки",
+
+        sidebarTitle: "Чат",
+        pinnedDms: "Закреплённые личные чаты",
+        veikkoName: "Вейкко Лайне (Инженер)",
+        veikkoSubInitial: "Прибыл на TRN-088...",
+        veikkoSubProbe: "TRN-088 · Проблема с SFP...",
+        mattiName: "Матти Пенттиля (Лид эксплуатации)",
+        mattiSub: "Обсудим раскатку прошивки v4.2",
+        channelsHeader: "Каналы (Elisa Network Ops)",
+        probeCardTitle: "Детектор пробелов SisuProbe",
+        probeCardDesc: "Обнаружено слепое пятно в слое <strong>as-experienced</strong> для <strong>NX-19 (FW v4.1)</strong> после замены SFP и доступа к северному шлагбауму.",
+
+        chatHeaderName: "Вейкко Лайне · Младший выездной инженер",
+        chatHeaderSite: "На объекте: <strong>TRN-088 (Кольцо Оулу)</strong>",
+        chatDateToday: "Сегодня · 7 ноября 2026",
+        typingText: "Вейкко Лайне печатает...",
+
+        msgBaseline: "Прибыл на площадку TRN-088. Начинаю плановую замену SFP на аплинке <span class=\"msg-highlight-code\">ge-0/0/1</span>.",
+        msgProbe: "Привет, Эркки! Поменял SFP на <strong>TRN-088</strong> (<span class=\"msg-highlight-code\">модель NX-19, прошивка v4.1</span>). Линк UP (зелёный), оптика в норме (-3.2 dBm), но счётчики трафика по нулям. Похоже, зависла матрица коммутации — я сейчас выдерну питание и жёстко ребутну всё шасси со сбросом конфига в дефолт, ок? И кстати, не знаешь, где ключ от шлагбаума на северной частной дороге?",
+
+        chipsLabel: "⚡ Быстрый ответ от лица Эркки (Старший спец.) — Нажмите чип или введите текст:",
+        chipsHint: "Триггер закона Каннингема",
+        chip1Title: "Чип 1 · Правило счётчиков SFP (NX-19)",
+        chip1Text: "СТОП! Не вздумай ребутать! На NX-19 с прошивкой v4.1 зелёный статус линка врёт после замены SFP. Если счётчики по нулям — просто выключи интерфейс (disable), подожди 5 сек и включи снова (enable)!",
+        chip2Title: "Чип 2 · Ключ от северного шлагбаума",
+        chip2Text: "По северному шлагбауму: ключа нет в базе — он в защищённом сейф-боксе за трансформаторной будкой (ПИН 4412).",
+        chip3Title: "Чип 3 · Тест неуверенной гипотезы",
+        chip3Text: "Может, попробовать поменять оптический патчкорд или перезагрузить линейную карту? Не уверен на 100%.",
+
+        composerStatus: "Ответ от имени Эркки Корхонена",
+        composerPlaceholder: "Напишите ответ Вейкко Лайне... (Enter для отправки)",
+
+        veikkoReplySuccess: "Выключил <span class=\"msg-highlight-code\">ge-0/0/1</span>, подождал 5 сек, включил. Счётчики полетели (<strong>4.2 Гбит/с</strong>)! Ты только что спас меня от двухчасового простоя. И ПИН от сейф-бокса записал, спасибо!",
+        veikkoReplyBarrierOnly: "Нашёл защищённый сейф-бокс (ПИН <strong>4412</strong>) за трансформаторной будкой — шлагбаум открыт! Но на <span class=\"msg-highlight-code\">ge-0/0/1</span> всё ещё 0 бит/с — что делать перед тем, как я дёрну питание шасси?",
+        veikkoReplyHunch: "Попробовал поменять оптический патчкорд — на <span class=\"msg-highlight-code\">ge-0/0/1</span> всё равно 0 бит/с... Точно дёргать питание шасси?",
+
+        toastCaptureTitle: "⚡ Фоновый перехват: Контекстное правило извлечено",
+        toastCaptureSfp: "Извлечено правило Context Assertion из чата Teams -> Привязано к [Model: NX-19, FW: v4.1, Nodes: TRN-088, TRN-105].",
+        toastCaptureBarrier: "Извлечён контекст доступа к объекту -> Привязано к [Site: Northern Lapland Barrier, Lockbox PIN: 4412].",
+        toastHunchTitle: "🛡️ Эпистемический фильтр: Низкая уверенность (0.38)",
+        toastHunchBody: "Обнаружено сомнение ('Может... Не уверен на 100%'). Записано как непроверенная гипотеза; НЕ передано в Автопилот NOC.",
+
+        xrayTitle: "X-Ray: Цифровой Мастер и Слой Контекста",
+        xraySubtitle: "Извлечение графа знаний в реальном времени из потока чата Teams",
+        secLayers: "1. 5-УРОВНЕВАЯ МОДЕЛЬ СЕТИ ELISA",
+        layer1: "Намерение / Дизайн (as-designed)",
+        layer2: "Физика / Пассивная сеть (as-built)",
+        layer3: "Рантайм / Активная сеть (as-running)",
+        layer4: "Контекст / Опыт (as-experienced)",
+        layer5: "Поток событий (as-observed)",
+        layerReady: "ГОТОВО",
+        layerMissing: "ПУСТО (ОБНАРУЖЕН ПРОБЕЛ)",
+        layerPopulated: "ЗАПОЛНЕНО (СВЯЗАНО ВЖИВУЮ)",
+        secGraph: "2. ГРАФ ЗНАНИЙ: ПРИВЯЗКА СУЩНОСТЕЙ И ФИЛЬТРЫ",
+        secJson: "3. ИНСПЕКТОР СТРУКТУРИРОВАННЫХ JSON-ПРАВИЛ",
+
+        nocHeading: "Автономный Автопилот NOC Elisa · Ночная смена",
+        nocSubheading: "Автоматическое устранение сбоев на базе слоя Контекста (as-experienced) Цифрового Мастера",
+        nocBannerEmpty: "⚠️ Слой Контекста (as-experienced): 0 правил захвачено",
+        nocBannerActive: "✅ Слой Контекста (as-experienced): Активен и верифицирован",
+
+        tabABadge: "Точное совпадение",
+        tabATitle: "TRN-105 · NX-19 · FW v4.1",
+        tabADesc: "Автономное восстановление по правилу Эркки",
+
+        tabBBadge: "Срок истёк",
+        tabBTitle: "TRN-105 · Обновлён до FW v4.2",
+        tabBDesc: "Проверка valid_to: блокировка старого воркараунда v4.1",
+
+        tabCBadge: "Другая модель",
+        tabCTitle: "TRN-210 · Модель NX-24 · FW v6.0",
+        tabCDesc: "Точность связей: правило NX-19 не применяется к NX-24",
+
+        tabDBadge: "Контекст доступа",
+        tabDTitle: "Выезд · Северный шлагбаум",
+        tabDDesc: "Добавляет ПИН сейф-бокса (4412) в наряд до выезда",
+
+        telemetryCardTitle: "Телеметрия узла и состояние оборудования",
+        lblNode: "Активный узел (Node ID)",
+        lblModel: "Модель оборудования",
+        lblFw: "Версия прошивки (FW)",
+        lblUptime: "Аптайм шасси",
+
+        btnRunSim: "▶ Запустить симуляцию инцидента 03:00",
+        terminalCardTitle: "Поток рассуждений автономного агента NOC",
+        impactMttrLbl: "Среднее время восстановления (MTTR)",
+        impactWakeLbl: "Ночных звонков инженерам в 03:00",
+        impactTruckLbl: "Предотвращено ложных выездов",
+        goBackTeamsBtn: "⬅ Перейти в 14:15 Teams и сначала захватить знания Эркки"
+      }
+    };
+
+    /* ========================================================================
+       APPLICATION STATE
+       ======================================================================== */
+    const state = {
+      lang: 'en',
+      currentView: 'teams', // 'teams' | 'noc'
+      xrayOpen: false,
+      jsonTab: 'sfp', // 'sfp' | 'barrier'
+      probeTriggered: false,
+      typingActive: false,
+      sfpCaptured: false,
+      barrierCaptured: false,
+      hunchTested: false,
+      capturedCount: 0,
+      customMessages: [],
+      activeScenario: 'A', // 'A' | 'B' | 'C' | 'D'
+      simTimers: [],
+      scenarioAResolved: false
+    };
+
+    /* ========================================================================
+       WEB AUDIO API SYNTHESIZER (NO EXTERNAL FILES)
+       ======================================================================== */
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      try {
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        if (type === 'teams-ping') {
+          // Authentic subtle two-tone Teams notification chime
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc1.type = 'sine';
+          osc2.type = 'triangle';
+          osc1.frequency.setValueAtTime(587.33, now); // D5
+          osc1.frequency.setValueAtTime(880.0, now + 0.11); // A5
+          osc2.frequency.setValueAtTime(293.66, now);
+          osc2.frequency.setValueAtTime(440.0, now + 0.11);
+
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.exponentialRampToValueAtTime(0.11, now + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(ctx.destination);
+          osc1.start(now);
+          osc2.start(now);
+          osc1.stop(now + 0.4);
+          osc2.stop(now + 0.4);
+        } else if (type === 'capture-chime') {
+          // Crisp harmonic chord for X-Ray knowledge extraction
+          [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.045);
+            gain.gain.setValueAtTime(0.001, now + idx * 0.045);
+            gain.gain.exponentialRampToValueAtTime(0.07, now + idx * 0.045 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.045 + 0.35);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.045);
+            osc.stop(now + idx * 0.045 + 0.36);
+          });
+        } else if (type === 'term-tick') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(720, now);
+          gain.gain.setValueAtTime(0.025, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        }
+      } catch (e) {
+        // Ignore audio restrictions if not yet interacted
+      }
+    }
+
+    /* ========================================================================
+       TOAST NOTIFICATION HELPER
+       ======================================================================== */
+    function showToast(title, body, variant = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast-card' + (variant === 'warn' ? ' warn' : '');
+      toast.innerHTML = `
+        <div style="font-size: 16px; line-height: 1;">${variant === 'warn' ? '🛡️' : '⚡'}</div>
+        <div style="flex: 1;">
+          <div class="toast-title">${title}</div>
+          <div class="toast-body">${body}</div>
+        </div>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-6px)';
+        toast.style.transition = 'all 0.2s ease';
+        setTimeout(() => toast.remove(), 220);
+      }, 4600);
+    }
+
+    /* ========================================================================
+       VIEW & DRAWER NAVIGATION
+       ======================================================================== */
+    function switchView(view) {
+      state.currentView = view;
+      const paneTeams = document.getElementById('view-teams');
+      const paneNoc = document.getElementById('view-noc');
+      const btnTeams = document.getElementById('btn-view-teams');
+      const btnNoc = document.getElementById('btn-view-noc');
+
+      if (view === 'teams') {
+        paneTeams.classList.add('active');
+        paneNoc.classList.remove('active');
+        btnTeams.className = 'view-btn active-teams';
+        btnNoc.className = 'view-btn';
+        // Clear unread badge when looking at Teams
+        document.getElementById('contact-veikko').classList.remove('unread');
+        document.getElementById('rail-unread-badge').classList.remove('visible');
+      } else {
+        paneTeams.classList.remove('active');
+        paneNoc.classList.add('active');
+        btnTeams.className = 'view-btn';
+        btnNoc.className = 'view-btn active-noc';
+        renderNocScenarioState();
+      }
+    }
+
+    function toggleXRay(forceState) {
+      state.xrayOpen = typeof forceState === 'boolean' ? forceState : !state.xrayOpen;
+      const drawer = document.getElementById('xray-drawer');
+      const btn = document.getElementById('btn-xray-toggle');
+      if (state.xrayOpen) {
+        drawer.classList.add('open');
+        btn.classList.add('open');
+      } else {
+        drawer.classList.remove('open');
+        btn.classList.remove('open');
+      }
+    }
+
+    function selectJsonTab(tab) {
+      state.jsonTab = tab;
+      document.getElementById('json-tab-sfp').classList.toggle('active', tab === 'sfp');
+      document.getElementById('json-tab-barrier').classList.toggle('active', tab === 'barrier');
+      renderXRayInspector();
+    }
+
+    /* ========================================================================
+       VIEW 1: MICROSOFT TEAMS INTERACTION & PROBE EXTRACTION
+       ======================================================================== */
+    function renderChatMessages() {
+      const t = I18N[state.lang];
+      const container = document.getElementById('chat-messages');
+      let html = `
+        <div class="chat-date-divider">${t.chatDateToday}</div>
+
+        <!-- Initial baseline message at 14:12 -->
+        <div class="msg-row">
+          <div class="avatar vl">
+            VL
+            <span class="status-dot online"></span>
+          </div>
+          <div class="msg-bubble-wrap">
+            <div class="msg-meta">
+              <span class="msg-author">Veikko Laine</span>
+              <span class="msg-timestamp">14:12</span>
+            </div>
+            <div class="msg-bubble">${t.msgBaseline}</div>
+          </div>
+        </div>
+      `;
+
+      if (state.probeTriggered) {
+        html += `
+          <div class="msg-row">
+            <div class="avatar vl">
+              VL
+              <span class="status-dot online"></span>
+            </div>
+            <div class="msg-bubble-wrap">
+              <div class="msg-meta">
+                <span class="msg-author">Veikko Laine</span>
+                <span class="msg-timestamp">14:15</span>
+              </div>
+              <div class="msg-bubble provocation">${t.msgProbe}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Render Erkki's replies and Veikko's responses
+      state.customMessages.forEach((m) => {
+        if (m.sender === 'erkki') {
+          const textDisplay = m.chipId === 1 ? t.chip1Text : m.chipId === 2 ? t.chip2Text : m.chipId === 3 ? t.chip3Text : escapeHtml(m.rawText);
+          html += `
+            <div class="msg-row outgoing">
+              <div class="avatar ek">EK</div>
+              <div class="msg-bubble-wrap">
+                <div class="msg-meta">
+                  <span class="msg-author">Erkki Korhonen</span>
+                  <span class="msg-timestamp">${m.time}</span>
+                </div>
+                <div class="msg-bubble">${textDisplay}</div>
+                ${m.reacted ? `
+                  <div class="msg-reaction-bar">
+                    ${m.extractedTag ? `<span class="extracted-tag" onclick="toggleXRay(true)">⚡ ${m.extractedTag}</span>` : ''}
+                    <span class="reaction-pill">👍 1</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `;
+        } else if (m.sender === 'veikko') {
+          let replyBody = '';
+          if (m.replyType === 'success') replyBody = t.veikkoReplySuccess;
+          else if (m.replyType === 'barrier') replyBody = t.veikkoReplyBarrierOnly;
+          else if (m.replyType === 'hunch') replyBody = t.veikkoReplyHunch;
+          html += `
+            <div class="msg-row">
+              <div class="avatar vl">
+                VL
+                <span class="status-dot online"></span>
+              </div>
+              <div class="msg-bubble-wrap">
+                <div class="msg-meta">
+                  <span class="msg-author">Veikko Laine</span>
+                  <span class="msg-timestamp">${m.time}</span>
+                </div>
+                <div class="msg-bubble">${replyBody}</div>
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      container.innerHTML = html;
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function triggerProbe() {
+      if (state.currentView !== 'teams') {
+        switchView('teams');
+      }
+      if (state.probeTriggered || state.typingActive) {
+        return;
+      }
+
+      state.typingActive = true;
+      const typingRow = document.getElementById('typing-indicator');
+      typingRow.classList.add('visible');
+      const chatMessages = document.getElementById('chat-messages');
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      setTimeout(() => {
+        state.typingActive = false;
+        state.probeTriggered = true;
+        typingRow.classList.remove('visible');
+
+        playSound('teams-ping');
+
+        const t = I18N[state.lang];
+        document.getElementById('ui-veikko-time').textContent = '14:15';
+        document.getElementById('ui-veikko-sub').textContent = t.veikkoSubProbe;
+        document.getElementById('contact-veikko').classList.add('unread');
+        document.getElementById('rail-unread-badge').classList.add('visible');
+
+        renderChatMessages();
+      }, 1200);
+    }
+
+    function sendQuickChip(chipId) {
+      if (state.currentView !== 'teams') {
+        switchView('teams');
+      }
+      // If probe wasn't triggered yet, ensure Veikko's question is present
+      if (!state.probeTriggered && !state.typingActive) {
+        state.probeTriggered = true;
+      }
+
+      const t = I18N[state.lang];
+      const text = chipId === 1 ? t.chip1Text : chipId === 2 ? t.chip2Text : t.chip3Text;
+      document.getElementById(`chip-${chipId}`).classList.add('used');
+      processErkkiMessage(text, chipId);
+    }
+
+    function handleComposerSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const raw = input.value.trim();
+      if (!raw) return;
+      input.value = '';
+      if (!state.probeTriggered) {
+        state.probeTriggered = true;
+      }
+      processErkkiMessage(raw, null);
+    }
+
+    function processErkkiMessage(rawText, chipId) {
+      const lower = rawText.toLowerCase();
+
+      // Detect SFP bounce rule vs Barrier PIN vs Conflicting Hunch
+      const isSfpRule =
+        chipId === 1 ||
+        lower.includes('disable') ||
+        lower.includes('enable') ||
+        lower.includes('bounce') ||
+        lower.includes('интерфейс') ||
+        lower.includes('ребут') ||
+        lower.includes('выключи');
+
+      const isBarrierRule =
+        chipId === 2 ||
+        lower.includes('шлагбаум') ||
+        lower.includes('lockbox') ||
+        lower.includes('4412') ||
+        lower.includes('barrier') ||
+        lower.includes('сейф');
+
+      const isHunch = chipId === 3 && !isSfpRule && !isBarrierRule;
+
+      const msgObj = {
+        sender: 'erkki',
+        chipId: chipId,
+        rawText: rawText,
+        time: '14:15',
+        reacted: false,
+        extractedTag: null
+      };
+
+      state.customMessages.push(msgObj);
+      document.getElementById('contact-veikko').classList.remove('unread');
+      document.getElementById('rail-unread-badge').classList.remove('visible');
+      renderChatMessages();
+
+      setTimeout(() => {
+        const t = I18N[state.lang];
+
+        if (isHunch) {
+          state.hunchTested = true;
+          msgObj.reacted = true;
+          msgObj.extractedTag = 'CONFIDENCE 0.38 · BLOCKED';
+          state.customMessages.push({
+            sender: 'veikko',
+            replyType: 'hunch',
+            time: '14:16'
+          });
+          renderChatMessages();
+          showToast(t.toastHunchTitle, t.toastHunchBody, 'warn');
+          return;
+        }
+
+        if (isSfpRule || isBarrierRule) {
+          msgObj.reacted = true;
+
+          if (isSfpRule && !state.sfpCaptured) {
+            state.sfpCaptured = true;
+            state.capturedCount += 1;
+          }
+          if (isBarrierRule && !state.barrierCaptured) {
+            state.barrierCaptured = true;
+            state.capturedCount += 1;
+          }
+
+          if (isSfpRule) {
+            msgObj.extractedTag = '#ctx-nx19-sfp-01';
+            state.jsonTab = 'sfp';
+          } else if (isBarrierRule) {
+            msgObj.extractedTag = '#ctx-lapland-barrier-02';
+            state.jsonTab = 'barrier';
+          }
+
+          playSound('capture-chime');
+
+          // Append Veikko's confirmation reply
+          const alreadyHasSuccessReply = state.customMessages.some(
+            (m) => m.sender === 'veikko' && m.replyType === 'success'
+          );
+          if (isSfpRule && !alreadyHasSuccessReply) {
+            state.customMessages.push({
+              sender: 'veikko',
+              replyType: 'success',
+              time: '14:16'
+            });
+          } else if (isBarrierRule && !isSfpRule && !alreadyHasSuccessReply) {
+            state.customMessages.push({
+              sender: 'veikko',
+              replyType: 'barrier',
+              time: '14:16'
+            });
+          }
+
+          updateXRayBadgeAndGraph();
+          renderChatMessages();
+
+          showToast(
+            t.toastCaptureTitle,
+            isSfpRule ? t.toastCaptureSfp : t.toastCaptureBarrier,
+            'info'
+          );
+        }
+      }, 800);
+    }
+
+    /* ========================================================================
+       X-RAY DRAWER & KNOWLEDGE GRAPH UPDATER
+       ======================================================================== */
+    function updateXRayBadgeAndGraph() {
+      const t = I18N[state.lang];
+      const badge = document.getElementById('xray-badge-count');
+      const xrayBtn = document.getElementById('btn-xray-toggle');
+      const layerStatus = document.getElementById('xray-context-layer-status');
+      const graphBadge = document.getElementById('xray-graph-badge');
+
+      badge.textContent = `(${state.capturedCount})`;
+
+      if (state.capturedCount > 0) {
+        badge.classList.add('captured');
+        xrayBtn.classList.add('pulsing');
+        layerStatus.textContent = t.layerPopulated;
+        layerStatus.className = 'layer-status populated';
+        graphBadge.textContent = `LIVE LINKED (${state.capturedCount})`;
+        graphBadge.style.color = 'var(--green)';
+      } else {
+        badge.classList.remove('captured');
+        xrayBtn.classList.remove('pulsing');
+        layerStatus.textContent = t.layerMissing;
+        layerStatus.className = 'layer-status missing';
+        graphBadge.textContent = 'UNBOUND';
+        graphBadge.style.color = 'var(--crimson)';
+      }
+
+      // Update SVG Knowledge Graph nodes
+      const rectCenter = document.getElementById('rect-center');
+      const svgCenterSub = document.getElementById('svg-center-sub');
+      const rectBarrier = document.getElementById('rect-barrier');
+      const svgBarrierSub = document.getElementById('svg-barrier-sub');
+      const edgeBarrier = document.getElementById('edge-barrier');
+
+      if (state.sfpCaptured) {
+        rectCenter.setAttribute('stroke', '#3ddc97');
+        svgCenterSub.setAttribute('fill', '#3ddc97');
+        svgCenterSub.textContent = 'ctx-nx19-sfp-01 [ACTIVE]';
+      } else {
+        rectCenter.setAttribute('stroke', '#ff5468');
+        svgCenterSub.setAttribute('fill', '#ff5468');
+        svgCenterSub.textContent = 'AWAITING PROBE CAPTURE';
+      }
+
+      if (state.barrierCaptured || state.sfpCaptured) {
+        rectBarrier.setAttribute('stroke', '#38c6f4');
+        svgBarrierSub.setAttribute('fill', '#3ddc97');
+        svgBarrierSub.textContent = state.barrierCaptured ? 'Lockbox PIN: 4412 [BOUND]' : 'Ready for PIN 4412';
+        if (state.barrierCaptured) {
+          edgeBarrier.setAttribute('stroke', '#3ddc97');
+          edgeBarrier.setAttribute('marker-end', 'url(#arrow-green)');
+        }
+      } else {
+        rectBarrier.setAttribute('stroke', '#475569');
+        svgBarrierSub.setAttribute('fill', '#94a3b8');
+        svgBarrierSub.textContent = 'Lockbox PIN: Pending';
+        edgeBarrier.setAttribute('stroke', '#475569');
+        edgeBarrier.setAttribute('marker-end', 'url(#arrow-dim)');
+      }
+
+      renderXRayInspector();
+      renderNocContextBanner();
+    }
+
+    function renderXRayInspector() {
+      const box = document.getElementById('json-inspector-box');
+      document.getElementById('json-tab-sfp').classList.toggle('active', state.jsonTab === 'sfp');
+      document.getElementById('json-tab-barrier').classList.toggle('active', state.jsonTab === 'barrier');
+
+      if (state.jsonTab === 'sfp') {
+        if (!state.sfpCaptured) {
+          box.innerHTML =
+`{
+  <span class="j-key">"assertion_id"</span>: <span class="j-null">null</span>,
+  <span class="j-key">"layer"</span>: <span class="j-str">"as-experienced"</span>,
+  <span class="j-key">"status"</span>: <span class="j-null">"GAP_DETECTED_AWAITING_PROBE"</span>,
+  <span class="j-key">"target_cohort"</span>: [<span class="j-str">"model:NX-19"</span>, <span class="j-str">"fw:v4.1"</span>],
+  <span class="j-key">"blind_spot"</span>: <span class="j-str">"post_sfp_swap_zero_traffic_counters"</span>,
+  <span class="j-key">"probe_dispatched_to"</span>: <span class="j-str">"Erkki (via Veikko Laine Teams DM @ 14:15)"</span>
+}`;
+        } else {
+          box.innerHTML =
+`{
+  <span class="j-key">"assertion_id"</span>: <span class="j-str">"ctx-nx19-sfp-01"</span>,
+  <span class="j-key">"layer"</span>: <span class="j-str">"as-experienced"</span>,
+  <span class="j-key">"bound_entities"</span>: [<span class="j-str">"model:NX-19"</span>, <span class="j-str">"fw:v4.1"</span>, <span class="j-str">"node:TRN-088"</span>, <span class="j-str">"node:TRN-105"</span>],
+  <span class="j-key">"trigger_condition"</span>: <span class="j-str">"post_sfp_swap &amp;&amp; link_status == 'UP' &amp;&amp; rx_power == 'NORMAL' &amp;&amp; traffic_counters == 0"</span>,
+  <span class="j-key">"remediation_action"</span>: <span class="j-str">"bounce_interface(disable, wait_5s, enable)"</span>,
+  <span class="j-key">"prohibited_action"</span>: <span class="j-str">"chassis_reboot_or_hw_swap"</span>,
+  <span class="j-key">"valid_from"</span>: <span class="j-str">"2026-11-07T14:15:22Z"</span>,
+  <span class="j-key">"valid_to"</span>: <span class="j-str">"until_event(firmware_upgrade &gt; 'v4.1')"</span>,
+  <span class="j-key">"provenance"</span>: {
+    <span class="j-key">"expert"</span>: <span class="j-str">"Erkki (Senior Specialist)"</span>,
+    <span class="j-key">"channel"</span>: <span class="j-str">"Teams DM (Zero-Friction Probe)"</span>,
+    <span class="j-key">"confidence"</span>: <span class="j-num">0.96</span>,
+    <span class="j-key">"verified_by_outcome"</span>: <span class="j-bool">true</span>
+  }
+}`;
+        }
+      } else {
+        if (!state.barrierCaptured) {
+          box.innerHTML =
+`{
+  <span class="j-key">"assertion_id"</span>: <span class="j-null">null</span>,
+  <span class="j-key">"layer"</span>: <span class="j-str">"as-experienced"</span>,
+  <span class="j-key">"status"</span>: <span class="j-null">"MISSING_SITE_ACCESS_CONTEXT"</span>,
+  <span class="j-key">"target_site"</span>: <span class="j-str">"site:northern-lapland-barrier"</span>,
+  <span class="j-key">"risk"</span>: <span class="j-str">"aborted_night_dispatch_locked_gate"</span>
+}`;
+        } else {
+          box.innerHTML =
+`{
+  <span class="j-key">"assertion_id"</span>: <span class="j-str">"ctx-lapland-barrier-02"</span>,
+  <span class="j-key">"layer"</span>: <span class="j-str">"as-experienced"</span>,
+  <span class="j-key">"bound_entities"</span>: [<span class="j-str">"site:northern-lapland-barrier"</span>, <span class="j-str">"ring:oulu-north"</span>],
+  <span class="j-key">"access_instruction"</span>: <span class="j-str">"Weatherproof lockbox behind transformer hut"</span>,
+  <span class="j-key">"lockbox_pin"</span>: <span class="j-str">"4412"</span>,
+  <span class="j-key">"valid_from"</span>: <span class="j-str">"2026-11-07T14:15:40Z"</span>,
+  <span class="j-key">"valid_to"</span>: <span class="j-str">"until_event(lockbox_rotation)"</span>,
+  <span class="j-key">"provenance"</span>: {
+    <span class="j-key">"expert"</span>: <span class="j-str">"Erkki (Senior Specialist)"</span>,
+    <span class="j-key">"channel"</span>: <span class="j-str">"Teams DM (Zero-Friction Probe)"</span>,
+    <span class="j-key">"confidence"</span>: <span class="j-num">0.98</span>,
+    <span class="j-key">"verified_by_outcome"</span>: <span class="j-bool">true</span>
+  }
+}`;
+        }
+      }
+    }
+
+    /* ========================================================================
+       VIEW 2: 03:00 AM ELISA NOC AUTOPILOT SCENARIOS & SIMULATION
+       ======================================================================== */
+    function clearSimTimers() {
+      state.simTimers.forEach((id) => clearTimeout(id));
+      state.simTimers = [];
+    }
+
+    function renderNocContextBanner() {
+      const t = I18N[state.lang];
+      const banner = document.getElementById('noc-context-banner');
+      if (state.capturedCount > 0) {
+        banner.style.borderColor = 'rgba(61, 220, 151, 0.5)';
+        banner.style.color = 'var(--green)';
+        banner.innerHTML = `<span>${t.nocBannerActive} (${state.capturedCount})</span>`;
+      } else {
+        banner.style.borderColor = 'rgba(255, 84, 104, 0.5)';
+        banner.style.color = 'var(--crimson)';
+        banner.innerHTML = `<span>${t.nocBannerEmpty}</span>`;
+      }
+    }
+
+    function selectScenario(tab) {
+      state.activeScenario = tab;
+      state.scenarioAResolved = false;
+      ['A', 'B', 'C', 'D'].forEach((k) => {
+        document.getElementById(`tab-btn-${k}`).classList.toggle('active', k === tab);
+      });
+      renderNocScenarioState();
+      runNocSimulation();
+    }
+
+    function renderNocScenarioState() {
+      const tab = state.activeScenario;
+      const isRu = state.lang === 'ru';
+      renderNocContextBanner();
+
+      const nodeIdEl = document.getElementById('val-node-id');
+      const modelEl = document.getElementById('val-hw-model');
+      const fwEl = document.getElementById('val-fw-ver');
+      const uptimeEl = document.getElementById('val-uptime');
+
+      const tb1Lbl = document.getElementById('tbox-1-lbl');
+      const tb1Val = document.getElementById('tbox-1-val');
+      const tb1Sub = document.getElementById('tbox-1-sub');
+
+      const tb2Lbl = document.getElementById('tbox-2-lbl');
+      const tb2Val = document.getElementById('tbox-2-val');
+      const tb2Sub = document.getElementById('tbox-2-sub');
+
+      const tb3Lbl = document.getElementById('tbox-3-lbl');
+      const tb3Val = document.getElementById('tbox-3-val');
+      const tb3Sub = document.getElementById('tbox-3-sub');
+
+      const tb4Box = document.getElementById('tbox-4');
+      const tb4Lbl = document.getElementById('tbox-4-lbl');
+      const tb4Val = document.getElementById('tbox-4-val');
+      const tb4Sub = document.getElementById('tbox-4-sub');
+
+      const portLed = document.getElementById('port-led');
+      const portLabel = document.getElementById('port-label');
+      const faceplateStatus = document.getElementById('faceplate-status');
+      const scenTag = document.getElementById('terminal-scenario-tag');
+
+      if (tab === 'A') {
+        scenTag.textContent = 'SCENARIO A · TRN-105 (NX-19 / FW v4.1)';
+        nodeIdEl.textContent = 'TRN-105';
+        modelEl.textContent = 'NX-19 (2019 Batch)';
+        fwEl.textContent = 'v4.1-build88';
+        uptimeEl.textContent = '412d 19h 04m';
+
+        tb1Lbl.textContent = isRu ? 'Статус SFP (ge-0/0/1)' : 'SFP Status (ge-0/0/1)';
+        tb1Val.textContent = 'REPLACED';
+        tb1Sub.textContent = '10GBASE-LR · Serial #SFP-992';
+
+        tb2Lbl.textContent = isRu ? 'Состояние линка' : 'Link State';
+        tb2Val.textContent = 'UP (GREEN)';
+        tb2Sub.textContent = 'L1 Carrier Detected';
+
+        tb3Lbl.textContent = isRu ? 'Уровень приёма RX' : 'Optics RX Power';
+        tb3Val.textContent = '-3.1 dBm';
+        tb3Sub.textContent = 'Nominal (-1.0 to -9.5 dBm)';
+
+        tb4Lbl.textContent = isRu ? 'Счётчики трафика' : 'Traffic Counters';
+        if (state.scenarioAResolved) {
+          tb4Box.className = 'telemetry-box ok-state';
+          tb4Val.className = 'telemetry-value green';
+          tb4Val.textContent = '4.8 Gbps';
+          tb4Sub.textContent = isRu ? 'Восстановлено после bounce' : 'Restored via interface bounce';
+          portLed.className = 'led-indicator';
+          faceplateStatus.style.color = 'var(--green)';
+          faceplateStatus.textContent = 'FORWARDING NOMINAL (4.8 Gbps)';
+        } else {
+          tb4Box.className = 'telemetry-box alert-state';
+          tb4Val.className = 'telemetry-value crimson';
+          tb4Val.textContent = '0 bps';
+          tb4Sub.textContent = isRu ? 'Зависли после замены SFP' : 'Stuck post-SFP swap';
+          portLed.className = 'led-indicator amber';
+          faceplateStatus.style.color = 'var(--amber)';
+          faceplateStatus.textContent = 'ASIC COUNTER LOCK';
+        }
+        portLabel.textContent = 'ge-0/0/1 [UPLINK]';
+      } else if (tab === 'B') {
+        scenTag.textContent = 'SCENARIO B · TRN-105 (UPGRADED FW v4.2)';
+        nodeIdEl.textContent = 'TRN-105';
+        modelEl.textContent = 'NX-19 (2019 Batch)';
+        fwEl.textContent = 'v4.2-release (Upgraded)';
+        uptimeEl.textContent = '14d 06h 18m';
+
+        tb1Lbl.textContent = isRu ? 'Статус SFP (ge-0/0/1)' : 'SFP Status (ge-0/0/1)';
+        tb1Val.textContent = 'REPLACED';
+        tb1Sub.textContent = '10GBASE-LR · Serial #SFP-998';
+
+        tb2Lbl.textContent = isRu ? 'Состояние линка' : 'Link State';
+        tb2Val.textContent = 'UP (GREEN)';
+        tb2Sub.textContent = 'L1 Carrier Detected';
+
+        tb3Lbl.textContent = isRu ? 'Уровень приёма RX' : 'Optics RX Power';
+        tb3Val.textContent = '-3.0 dBm';
+        tb3Sub.textContent = 'Nominal (-1.0 to -9.5 dBm)';
+
+        tb4Box.className = 'telemetry-box alert-state';
+        tb4Lbl.textContent = isRu ? 'Счётчики трафика' : 'Traffic Counters';
+        tb4Val.className = 'telemetry-value crimson';
+        tb4Val.textContent = '0 bps';
+        tb4Sub.textContent = isRu ? 'Аномалия на FW v4.2' : 'Anomaly under FW v4.2';
+
+        portLed.className = 'led-indicator amber';
+        portLabel.textContent = 'ge-0/0/1 [FW v4.2]';
+        faceplateStatus.style.color = 'var(--cyan)';
+        faceplateStatus.textContent = 'TIME VALIDITY GATE ACTIVE';
+      } else if (tab === 'C') {
+        scenTag.textContent = 'SCENARIO C · TRN-210 (MODEL NX-24 / FW v6.0)';
+        nodeIdEl.textContent = 'TRN-210';
+        modelEl.textContent = 'NX-24 (2024 Core)';
+        fwEl.textContent = 'v6.0.2-lts';
+        uptimeEl.textContent = '189d 11h 42m';
+
+        tb1Lbl.textContent = isRu ? 'Статус QSFP28 (et-0/0/0)' : 'QSFP28 Status (et-0/0/0)';
+        tb1Val.textContent = 'REPLACED';
+        tb1Sub.textContent = '100GBASE-LR4 · Serial #Q-401';
+
+        tb2Lbl.textContent = isRu ? 'Состояние линка' : 'Link State';
+        tb2Val.textContent = 'UP (GREEN)';
+        tb2Sub.textContent = 'FEC Locked';
+
+        tb3Lbl.textContent = isRu ? 'Уровень приёма RX' : 'Optics RX Power';
+        tb3Val.textContent = '-2.4 dBm';
+        tb3Sub.textContent = 'Nominal 100G Lane 0-3';
+
+        tb4Box.className = 'telemetry-box alert-state';
+        tb4Lbl.textContent = isRu ? 'Счётчики трафика' : 'Traffic Counters';
+        tb4Val.className = 'telemetry-value crimson';
+        tb4Val.textContent = '0 bps';
+        tb4Sub.textContent = isRu ? 'Другая платформа (NX-24)' : 'Distinct ASIC Architecture';
+
+        portLed.className = 'led-indicator amber';
+        portLabel.textContent = 'et-0/0/0 [100G CORE]';
+        faceplateStatus.style.color = 'var(--cyan)';
+        faceplateStatus.textContent = 'ENTITY COHORT FILTER ACTIVE';
+      } else if (tab === 'D') {
+        scenTag.textContent = 'SCENARIO D · NORTHERN LAPLAND BARRIER DISPATCH';
+        nodeIdEl.textContent = 'SITE-LAP-09';
+        modelEl.textContent = 'Remote Fiber Hut + PSU';
+        fwEl.textContent = 'Access Gate #N-04';
+        uptimeEl.textContent = 'Battery Backup (82%)';
+
+        tb1Lbl.textContent = isRu ? 'Наряд на выезд' : 'Dispatch Work Order';
+        tb1Val.textContent = '#WO-88412';
+        tb1Sub.textContent = isRu ? 'Ночная бригада · Рованиеми' : 'Night Crew · Rovaniemi';
+
+        tb2Lbl.textContent = isRu ? 'Частная дорога' : 'Private Road Gate';
+        tb2Val.textContent = 'LOCKED BARRIER';
+        tb2Sub.textContent = isRu ? 'Вне базы паспортов' : 'Unlisted in GIS Inventory';
+
+        tb3Lbl.textContent = isRu ? 'Погодные условия' : 'Site Weather';
+        tb3Val.textContent = '-19°C · SNOW';
+        tb3Sub.textContent = 'Northern Lapland Sector';
+
+        const hasPin = state.barrierCaptured || state.sfpCaptured;
+        tb4Box.className = hasPin ? 'telemetry-box ok-state' : 'telemetry-box alert-state';
+        tb4Lbl.textContent = isRu ? 'Ключ доступа (Lockbox)' : 'Access Context (Lockbox)';
+        tb4Val.className = hasPin ? 'telemetry-value green' : 'telemetry-value crimson';
+        tb4Val.textContent = hasPin ? 'PIN 4412 ATTACHED' : 'MISSING KEY';
+        tb4Sub.textContent = hasPin
+          ? (isRu ? 'За трансформаторной будкой' : 'Behind transformer hut')
+          : (isRu ? 'Риск холостого выезда' : 'Risk of aborted truck roll');
+
+        portLed.className = hasPin ? 'led-indicator' : 'led-indicator amber';
+        portLabel.textContent = 'GATE-LOCKBOX [PIN 4412]';
+        faceplateStatus.style.color = hasPin ? 'var(--green)' : 'var(--crimson)';
+        faceplateStatus.textContent = hasPin ? 'DISPATCH PACKET ENRICHED' : 'ACCESS CONTEXT MISSING';
+      }
+    }
+
+    function runNocSimulation() {
+      clearSimTimers();
+      const termBody = document.getElementById('terminal-body');
+      const stateLabel = document.getElementById('terminal-state-label');
+      termBody.innerHTML = '';
+      stateLabel.textContent = 'EXECUTING...';
+      stateLabel.style.color = 'var(--cyan)';
+
+      const isRu = state.lang === 'ru';
+      const tab = state.activeScenario;
+      const t = I18N[state.lang];
+
+      let steps = [];
+
+      if (tab === 'A') {
+        state.scenarioAResolved = false;
+        renderNocScenarioState();
+
+        if (!state.sfpCaptured) {
+          // CRITICAL STATE CHECK: Fails visibly in RED if Erkki's knowledge wasn't captured yet!
+          steps = isRu
+            ? [
+                { cls: 'warn', text: '[03:00:01.104] 🚨 Аномалия на TRN-105 (NX-19, FW v4.1): Линк UP, RX -3.1 dBm, Трафик 0 бит/с.' },
+                { cls: '', text: '[03:00:01.450] 🧠 Запрос в Цифровой Мастер: Слой Контекста (as-experienced) для [NX-19 / v4.1]...' },
+                { cls: 'error', text: '[03:00:02.012] ❌ Context Layer (as-experienced) ПУСТ для [NX-19 / v4.1].' },
+                { cls: 'error', text: '[03:00:03.180] ⚠️ Возврат к стандартному плейбуку: Попытка повторного выезда для замены SFP и подъём дежурного эксперта (Эркки) в 03:00 ночи!', cta: true }
+              ]
+            : [
+                { cls: 'warn', text: '[03:00:01.104] 🚨 Anomaly on TRN-105 (NX-19, FW v4.1): Link UP, RX -3.1 dBm, Traffic 0 bps.' },
+                { cls: '', text: '[03:00:01.450] 🧠 Querying Digital Master Context Layer (as-experienced) for [NX-19 / v4.1]...' },
+                { cls: 'error', text: '[03:00:02.012] ❌ Context Layer (as-experienced) is EMPTY for [NX-19 / v4.1].' },
+                { cls: 'error', text: '[03:00:03.180] ⚠️ Falling back to default playbook: Attempting unnecessary SFP re-dispatch & waking on-call expert (Erkki) at 03:00 AM!', cta: true }
+              ];
+
+          document.getElementById('val-impact-mttr').textContent = '2h 15m (Manual)';
+          document.getElementById('val-impact-mttr').style.color = 'var(--crimson)';
+          document.getElementById('val-impact-wake').textContent = '1 woken (Erkki)';
+          document.getElementById('val-impact-wake').style.color = 'var(--crimson)';
+        } else {
+          // Succeeds in GREEN after capturing Erkki's reply in View 1!
+          steps = isRu
+            ? [
+                { cls: 'warn', text: '[03:00:01.080] 🚨 Аномалия на TRN-105: Линк UP, RX в норме (-3.1 dBm), Трафик 0 бит/с.' },
+                { cls: '', text: '[03:00:01.620] 🧠 Запрос в Цифровой Мастер: Слой Контекста (as-experienced)...' },
+                { cls: 'match', text: '[03:00:02.110] ⚡ НАЙДЕНО СОВПАДЕНИЕ: Правило #ctx-nx19-sfp-01 (Захвачено от Эркки в 14:15 через Teams).' },
+                { cls: 'match', text: '[03:00:03.040] 🛡️ Переопределение плейбука: Блокировка ребута шасси. Выполняется перезапуск интерфейса (ge-0/0/1 disable -> 5s -> enable).' },
+                { cls: 'success', text: '[03:00:05.190] ✅ Трафик восстановлен до 4.8 Гбит/с! Инцидент закрыт автоматически. 0 человек разбужено ночью.', resolveA: true }
+              ]
+            : [
+                { cls: 'warn', text: '[03:00:01.080] 🚨 Anomaly on TRN-105: Link UP, RX Normal, Traffic 0 bps.' },
+                { cls: '', text: '[03:00:01.620] 🧠 Querying Digital Master Context Layer (as-experienced)...' },
+                { cls: 'match', text: '[03:00:02.110] ⚡ MATCH FOUND: Assertion #ctx-nx19-sfp-01 (Captured from Erkki at 14:15 via Teams).' },
+                { cls: 'match', text: '[03:00:03.040] 🛡️ Playbook Override: Blocking chassis reboot. Executing interface bounce (ge-0/0/1 disable -> 5s -> enable).' },
+                { cls: 'success', text: '[03:00:05.190] ✅ Traffic restored to 4.8 Gbps! Incident auto-resolved. 0 humans woken up.', resolveA: true }
+              ];
+
+          document.getElementById('val-impact-mttr').textContent = '4.2 sec';
+          document.getElementById('val-impact-mttr').style.color = 'var(--green)';
+          document.getElementById('val-impact-wake').textContent = '0 humans';
+          document.getElementById('val-impact-wake').style.color = 'var(--green)';
+        }
+      } else if (tab === 'B') {
+        steps = isRu
+          ? [
+              { cls: 'warn', text: '[03:00:01.115] 🚨 Аномалия на TRN-105: Счётчики 0 бит/с на ge-0/0/1.' },
+              { cls: '', text: '[03:00:01.510] 🧠 Проверка кандидата #ctx-nx19-sfp-01 в слое Контекста (as-experienced)...' },
+              { cls: 'match', text: '[03:00:02.090] ⏱️ ПРОВЕРКА ВРЕМЕННОЙ ВАЛИДНОСТИ (valid_to): Текущая прошивка узла FW v4.2 > лимита правила (FW v4.1).' },
+              { cls: 'warn', text: '[03:00:02.640] 🛡️ СРАБОТАЛА ЗАЩИТА: Старый воркараунд для v4.1 автоматически помечен как ИСТЕКШИЙ (EXPIRED). Слепое выполнение заблокировано.' },
+              { cls: 'success', text: '[03:00:03.220] ✅ Запущена стандартная диагностика L2/L3 для ветки FW v4.2 без риска повреждения конфигурации.' }
+            ]
+          : [
+              { cls: 'warn', text: '[03:00:01.115] 🚨 Anomaly on TRN-105: Traffic counters 0 bps on ge-0/0/1.' },
+              { cls: '', text: '[03:00:01.510] 🧠 Evaluating candidate Assertion #ctx-nx19-sfp-01 in Context Layer...' },
+              { cls: 'match', text: '[03:00:02.090] ⏱️ TIME VALIDITY CHECK (valid_to): Node runtime firmware is FW v4.2 > assertion gate (FW v4.1).' },
+              { cls: 'warn', text: '[03:00:02.640] 🛡️ GUARDRAIL TRIGGERED: Legacy v4.1 workaround invalidated cleanly. Blind execution prevented.' },
+              { cls: 'success', text: '[03:00:03.220] ✅ Escalated to clean v4.2 telemetry diagnostics without destructive side-effects.' }
+            ];
+        document.getElementById('val-impact-mttr').textContent = 'Guarded';
+        document.getElementById('val-impact-mttr').style.color = 'var(--cyan)';
+        document.getElementById('val-impact-wake').textContent = '0 false actions';
+        document.getElementById('val-impact-wake').style.color = 'var(--green)';
+      } else if (tab === 'C') {
+        steps = isRu
+          ? [
+              { cls: 'warn', text: '[03:00:01.090] 🚨 Аномалия на TRN-210 (Модель: NX-24, FW: v6.0): 0 бит/с после замены QSFP28.' },
+              { cls: '', text: '[03:00:01.490] 🧠 Запрос в граф сущностей Цифрового Мастера для [model:NX-24, fw:v6.0]...' },
+              { cls: 'match', text: '[03:00:02.040] 🔍 ФИЛЬТР СУЩНОСТЕЙ: Правило #ctx-nx19-sfp-01 строго привязано к когорте [model:NX-19]. Узел TRN-210 исключён.' },
+              { cls: 'success', text: '[03:00:02.780] ✅ Предотвращено ошибочное применение правила NX-19 к магистральному маршрутизатору NX-24.' }
+            ]
+          : [
+              { cls: 'warn', text: '[03:00:01.090] 🚨 Anomaly on TRN-210 (Model: NX-24, FW: v6.0): 0 bps post-QSFP28 swap.' },
+              { cls: '', text: '[03:00:01.490] 🧠 Querying Digital Master Entity Graph for [model:NX-24, fw:v6.0]...' },
+              { cls: 'match', text: '[03:00:02.040] 🔍 ENTITY PRECISION CHECK: Assertion #ctx-nx19-sfp-01 is strictly scoped to [model:NX-19]. Node TRN-210 excluded.' },
+              { cls: 'success', text: '[03:00:02.780] ✅ Prevented cross-platform rule contamination on core NX-24 chassis.' }
+            ];
+        document.getElementById('val-impact-mttr').textContent = '100% Scoped';
+        document.getElementById('val-impact-mttr').style.color = 'var(--cyan)';
+        document.getElementById('val-impact-wake').textContent = '0 misapplied';
+        document.getElementById('val-impact-wake').style.color = 'var(--green)';
+      } else if (tab === 'D') {
+        const hasPin = state.barrierCaptured || state.sfpCaptured;
+        if (!hasPin) {
+          steps = isRu
+            ? [
+                { cls: 'warn', text: '[03:00:01.200] 🚚 Формирование наряда #WO-88412: Аварийный выезд на узел SITE-LAP-09 (Северная Лапландия).' },
+                { cls: '', text: '[03:00:01.650] 🧠 Запрос контекста доступа к площадке [site:northern-lapland-barrier]...' },
+                { cls: 'error', text: '[03:00:02.210] ❌ Слой Контекста ПУСТ: В базе паспортов нет данных о ключе от частного шлагбаума.' },
+                { cls: 'error', text: '[03:00:03.100] ⚠️ Бригада упёрлась в закрытый шлагбаум при -19°C! Звонок Эркки в 03:00 ночи для поиска ключа!', cta: true }
+              ]
+            : [
+                { cls: 'warn', text: '[03:00:01.200] 🚚 Generating Dispatch Work Order #WO-88412: Night crew rollout to SITE-LAP-09 (Northern Lapland).' },
+                { cls: '', text: '[03:00:01.650] 🧠 Querying Site Access Context for [site:northern-lapland-barrier]...' },
+                { cls: 'error', text: '[03:00:02.210] ❌ Context Layer EMPTY: Private road barrier key unlisted in passive GIS inventory.' },
+                { cls: 'error', text: '[03:00:03.100] ⚠️ Field truck blocked at locked barrier in -19°C! Waking Erkki at 03:00 AM for gate access!', cta: true }
+              ];
+        } else {
+          steps = isRu
+            ? [
+                { cls: 'warn', text: '[03:00:01.200] 🚚 Формирование наряда #WO-88412: Выезд бригады на SITE-LAP-09 (Северная Лапландия).' },
+                { cls: '', text: '[03:00:01.650] 🧠 Запрос в Цифровой Мастер: Контекст доступа [site:northern-lapland-barrier]...' },
+                { cls: 'match', text: '[03:00:02.180] ⚡ НАЙДЕНО СОВПАДЕНИЕ: Правило #ctx-lapland-barrier-02 (Захвачено от Эркки в 14:15 через Teams).' },
+                { cls: 'match', text: '[03:00:02.790] 🔑 Обогащение наряда: «Ключ в защищённом сейф-боксе за трансформаторной будкой, ПИН 4412».' },
+                { cls: 'success', text: '[03:00:03.400] ✅ Бригада проехала шлагбаум с первой попытки до выезда грузовика. 0 ночных звонков!' }
+              ]
+            : [
+                { cls: 'warn', text: '[03:00:01.200] 🚚 Generating Dispatch Work Order #WO-88412: Night crew rollout to SITE-LAP-09 (Northern Lapland).' },
+                { cls: '', text: '[03:00:01.650] 🧠 Querying Digital Master Context Layer for [site:northern-lapland-barrier]...' },
+                { cls: 'match', text: '[03:00:02.180] ⚡ MATCH FOUND: Assertion #ctx-lapland-barrier-02 (Captured from Erkki at 14:15 via Teams).' },
+                { cls: 'match', text: '[03:00:02.790] 🔑 Work Order Enriched: "Key in weatherproof lockbox behind transformer hut — PIN 4412" attached.' },
+                { cls: 'success', text: '[03:00:03.400] ✅ First-time site access guaranteed before truck rolls. 0 humans woken up at 03:00 AM!' }
+              ];
+        }
+      }
+
+      steps.forEach((step, idx) => {
+        const timerId = setTimeout(() => {
+          playSound('term-tick');
+          const line = document.createElement('div');
+          line.className = 'term-line' + (step.cls ? ' ' + step.cls : '');
+          line.textContent = step.text;
+          termBody.appendChild(line);
+
+          if (step.cta) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'term-cta-btn';
+            btn.textContent = t.goBackTeamsBtn;
+            btn.onclick = () => {
+              switchView('teams');
+              if (!state.probeTriggered) {
+                triggerProbe();
+              }
+            };
+            termBody.appendChild(btn);
+          }
+
+          if (step.resolveA) {
+            state.scenarioAResolved = true;
+            renderNocScenarioState();
+          }
+
+          if (idx === steps.length - 1) {
+            stateLabel.textContent = 'COMPLETE';
+            stateLabel.style.color = step.cls === 'error' ? 'var(--crimson)' : 'var(--green)';
+          }
+
+          termBody.scrollTop = termBody.scrollHeight;
+        }, idx * 350);
+
+        state.simTimers.push(timerId);
+      });
+    }
+
+    /* ========================================================================
+       AUXILIARY TEAMS SIDEBAR / RAIL HANDLERS
+       ======================================================================== */
+    function selectRail(item) {
+      const items = document.querySelectorAll('.teams-rail .rail-item');
+      items.forEach((el, idx) => {
+        el.classList.toggle('active', (item === 'activity' && idx === 0) || (item === 'chat' && idx === 1) || (item === 'teams' && idx === 2) || (item === 'calendar' && idx === 3) || (item === 'calls' && idx === 4));
+      });
+    }
+
+    function selectContact(who) {
+      document.getElementById('contact-veikko').classList.toggle('active', who === 'veikko');
+      document.getElementById('contact-matti').classList.toggle('active', who === 'matti');
+      if (who === 'matti') {
+        const isRu = state.lang === 'ru';
+        showToast(
+          isRu ? 'Чат с Матти Пенттиля' : 'Matti Penttilä · Lead Ops',
+          isRu
+            ? 'Матти сейчас отошёл (Away). Активная сессия SisuProbe закреплена на диалоге с Вейкко Лайне (TRN-088).'
+            : 'Matti is currently Away. Active SisuProbe extraction is anchored on Veikko Laine (TRN-088).',
+          'info'
+        );
+        setTimeout(() => {
+          document.getElementById('contact-veikko').classList.add('active');
+          document.getElementById('contact-matti').classList.remove('active');
+        }, 600);
+      }
+    }
+
+    function selectChannel(ch) {
+      const isRu = state.lang === 'ru';
+      showToast(
+        `#${ch}`,
+        isRu
+          ? 'Канал мониторится фоновым сенсором SisuProbe. Переключено обратно на личный чат с Вейкко Лайне.'
+          : 'Channel monitored by SisuProbe passive listener. Keeping active focus on Veikko Laine DM.',
+        'info'
+      );
+    }
+
+    function triggerCallToast(mode) {
+      const isRu = state.lang === 'ru';
+      showToast(
+        isRu ? 'Политика Zero-Friction' : 'Zero-Friction Probe Policy',
+        isRu
+          ? 'Аудио/видеозвонки не требуются: SisuProbe извлекает структурированный контекст прямо из 10-секундного ответа в чате.'
+          : 'No voice call needed: SisuProbe harvests structured Context Assertions directly from Erkki\'s 10-second chat reply.',
+        'info'
+      );
+    }
+
+    /* ========================================================================
+       RESET DEMO STATE
+       ======================================================================== */
+    function resetDemo() {
+      clearSimTimers();
+      state.probeTriggered = false;
+      state.typingActive = false;
+      state.sfpCaptured = false;
+      state.barrierCaptured = false;
+      state.hunchTested = false;
+      state.capturedCount = 0;
+      state.customMessages = [];
+      state.activeScenario = 'A';
+      state.scenarioAResolved = false;
+      state.jsonTab = 'sfp';
+
+      document.getElementById('typing-indicator').classList.remove('visible');
+      document.getElementById('contact-veikko').classList.remove('unread');
+      document.getElementById('rail-unread-badge').classList.remove('visible');
+      document.getElementById('ui-veikko-time').textContent = '14:12';
+      document.getElementById('ui-veikko-sub').textContent = I18N[state.lang].veikkoSubInitial;
+
+      ['chip-1', 'chip-2', 'chip-3'].forEach((id) => {
+        document.getElementById(id).classList.remove('used');
+      });
+
+      ['A', 'B', 'C', 'D'].forEach((k) => {
+        document.getElementById(`tab-btn-${k}`).classList.toggle('active', k === 'A');
+      });
+
+      updateXRayBadgeAndGraph();
+      renderChatMessages();
+      switchView('teams');
+    }
+
+    /* ========================================================================
+       LANGUAGE SWITCHING (EN / RU + ?lang=ru URL PARAM)
+       ======================================================================== */
+    function setLanguage(lang, updateUrl = true) {
+      state.lang = lang === 'ru' ? 'ru' : 'en';
+      document.documentElement.lang = state.lang;
+
+      document.getElementById('lang-en').classList.toggle('active', state.lang === 'en');
+      document.getElementById('lang-ru').classList.toggle('active', state.lang === 'ru');
+
+      if (updateUrl && window.history && window.history.replaceState) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', state.lang);
+        window.history.replaceState({}, '', url.toString());
+      }
+
+      const t = I18N[state.lang];
+      document.getElementById('ui-brand-badge').textContent = t.brandBadge;
+      document.getElementById('ui-tab-teams').textContent = t.tabTeams;
+      document.getElementById('ui-tab-noc').textContent = t.tabNoc;
+      document.getElementById('ui-btn-probe').textContent = t.btnProbe;
+      document.getElementById('ui-btn-xray').textContent = t.btnXray;
+      document.getElementById('ui-btn-reset').textContent = t.btnReset;
+
+      document.getElementById('ui-rail-activity').textContent = t.railActivity;
+      document.getElementById('ui-rail-chat').textContent = t.railChat;
+      document.getElementById('ui-rail-teams').textContent = t.railTeams;
+      document.getElementById('ui-rail-calendar').textContent = t.railCalendar;
+      document.getElementById('ui-rail-calls').textContent = t.railCalls;
+
+      document.getElementById('ui-sidebar-title').textContent = t.sidebarTitle;
+      document.getElementById('ui-pinned-dms').textContent = t.pinnedDms;
+      document.getElementById('ui-veikko-name').textContent = t.veikkoName;
+      document.getElementById('ui-veikko-sub').textContent = state.probeTriggered ? t.veikkoSubProbe : t.veikkoSubInitial;
+      document.getElementById('ui-matti-name').textContent = t.mattiName;
+      document.getElementById('ui-matti-sub').textContent = t.mattiSub;
+      document.getElementById('ui-channels-header').textContent = t.channelsHeader;
+      document.getElementById('ui-probe-card-title').textContent = t.probeCardTitle;
+      document.getElementById('ui-probe-card-desc').innerHTML = t.probeCardDesc;
+
+      document.getElementById('ui-chat-header-name').textContent = t.chatHeaderName;
+      document.getElementById('ui-chat-header-site').innerHTML = t.chatHeaderSite;
+      document.getElementById('ui-typing-text').textContent = t.typingText;
+
+      document.getElementById('ui-chips-label').textContent = t.chipsLabel;
+      document.getElementById('ui-chips-hint').textContent = t.chipsHint;
+      document.getElementById('ui-chip1-title').textContent = t.chip1Title;
+      document.getElementById('ui-chip1-text').textContent = t.chip1Text;
+      document.getElementById('ui-chip2-title').textContent = t.chip2Title;
+      document.getElementById('ui-chip2-text').textContent = t.chip2Text;
+      document.getElementById('ui-chip3-title').textContent = t.chip3Title;
+      document.getElementById('ui-chip3-text').textContent = t.chip3Text;
+
+      document.getElementById('ui-composer-status').textContent = t.composerStatus;
+      document.getElementById('chat-input').placeholder = t.composerPlaceholder;
+
+      document.getElementById('ui-xray-title').textContent = t.xrayTitle;
+      document.getElementById('ui-xray-subtitle').textContent = t.xraySubtitle;
+      document.getElementById('ui-sec-layers').textContent = t.secLayers;
+      document.getElementById('ui-layer-1').textContent = t.layer1;
+      document.getElementById('ui-layer-2').textContent = t.layer2;
+      document.getElementById('ui-layer-3').textContent = t.layer3;
+      document.getElementById('ui-layer-4').textContent = t.layer4;
+      document.getElementById('ui-layer-5').textContent = t.layer5;
+      document.getElementById('ui-layer-ready-1').textContent = t.layerReady;
+      document.getElementById('ui-layer-ready-2').textContent = t.layerReady;
+      document.getElementById('ui-layer-ready-3').textContent = t.layerReady;
+      document.getElementById('ui-layer-ready-5').textContent = t.layerReady;
+      document.getElementById('ui-sec-graph').textContent = t.secGraph;
+      document.getElementById('ui-sec-json').textContent = t.secJson;
+
+      document.getElementById('ui-noc-heading').textContent = t.nocHeading;
+      document.getElementById('ui-noc-subheading').textContent = t.nocSubheading;
+
+      document.getElementById('ui-tabA-badge').textContent = t.tabABadge;
+      document.getElementById('ui-tabA-title').textContent = t.tabATitle;
+      document.getElementById('ui-tabA-desc').textContent = t.tabADesc;
+
+      document.getElementById('ui-tabB-badge').textContent = t.tabBBadge;
+      document.getElementById('ui-tabB-title').textContent = t.tabBTitle;
+      document.getElementById('ui-tabB-desc').textContent = t.tabBDesc;
+
+      document.getElementById('ui-tabC-badge').textContent = t.tabCBadge;
+      document.getElementById('ui-tabC-title').textContent = t.tabCTitle;
+      document.getElementById('ui-tabC-desc').textContent = t.tabCDesc;
+
+      document.getElementById('ui-tabD-badge').textContent = t.tabDBadge;
+      document.getElementById('ui-tabD-title').textContent = t.tabDTitle;
+      document.getElementById('ui-tabD-desc').textContent = t.tabDDesc;
+
+      document.getElementById('ui-telemetry-card-title').textContent = t.telemetryCardTitle;
+      document.getElementById('ui-lbl-node').textContent = t.lblNode;
+      document.getElementById('ui-lbl-model').textContent = t.lblModel;
+      document.getElementById('ui-lbl-fw').textContent = t.lblFw;
+      document.getElementById('ui-lbl-uptime').textContent = t.lblUptime;
+
+      document.getElementById('ui-btn-run-sim').textContent = t.btnRunSim;
+      document.getElementById('ui-terminal-card-title').textContent = t.terminalCardTitle;
+      document.getElementById('ui-impact-mttr-lbl').textContent = t.impactMttrLbl;
+      document.getElementById('ui-impact-wake-lbl').textContent = t.impactWakeLbl;
+      document.getElementById('ui-impact-truck-lbl').textContent = t.impactTruckLbl;
+
+      updateXRayBadgeAndGraph();
+      renderChatMessages();
+      renderNocScenarioState();
+      if (state.currentView === 'noc') {
+        runNocSimulation();
+      }
+    }
+
+    /* ========================================================================
+       GLOBAL KEYBOARD SHORTCUTS (1, 2, X, Space when not in input/textarea)
+       ======================================================================== */
+    window.addEventListener('keydown', (e) => {
+      const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) {
+        return;
+      }
+      if (e.metaKey || e.ctrlKey || e.altKey) {
+        return;
+      }
+
+      if (e.key === '1') {
+        e.preventDefault();
+        switchView('teams');
+      } else if (e.key === '2') {
+        e.preventDefault();
+        switchView('noc');
+        runNocSimulation();
+      } else if (e.key === 'x' || e.key === 'X' || e.key === 'ч' || e.key === 'Ч') {
+        e.preventDefault();
+        toggleXRay();
+      } else if (e.code === 'Space') {
+        e.preventDefault();
+        triggerProbe();
+      }
+    });
+
+    /* ========================================================================
+       INITIALIZATION ON DOM CONTENT LOADED
+       ======================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = (params.get('lang') || '').toLowerCase();
+      const initialLang = urlLang === 'ru' ? 'ru' : 'en';
+      setLanguage(initialLang, false);
+      runNocSimulation();
+    });
+  </script>
+</body>
+</html>

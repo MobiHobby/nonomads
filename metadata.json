@@ -1,0 +1,6 @@
+{
+  "name": "SisuProbe — Elisa Context Layer & NOC Autopilot",
+  "description": "Adversarial Knowledge Extraction and Autonomous Night Operations for Elisa's Digital Master Context (as-experienced) Layer by Team NoNomads.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
